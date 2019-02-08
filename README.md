@@ -1,7 +1,7 @@
 # agraf
 AGRAF export / import scripts.
 
-This *README* describe the usage of AGRAF tool to create performance charts for Oracle Databases. The charts are created by exporting the selected AWR and dynamic views content into the plan CSV and text files. These files must be imported into the MySQL databases. In the next step you use Grafana to selects the imported data from the MySQL database and displays them as charts.
+This *README* describe the usage of AGRAF tool to create performance charts for Oracle Databases. The charts are created by exporting the selected AWR and dynamic views content into the plan CSV and text files. These files must be imported into the MySQL databases. In the next step you use Grafana and AGRAF App to display the imported data.
 
 # How to use AGRAF? #
 
