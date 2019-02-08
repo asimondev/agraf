@@ -6,9 +6,9 @@ This *README* describe the usage of AGRAF tool to create performance charts for 
 # How to use AGRAF? #
 
 1. Export data from AWR and dynamic files into CSV and plan text files.
-1. Transfer the files to the MySQL server.
+1. Transfer the files to the server with your MySQL server.
 1. Import the data into the MySQL server.
-1. Use browser to access Grafana server, which selects the data from the MySQL databases.
+1. Use browser to access Grafana server and set up the agraf_mysql database configuration property.
 
 ## Exporting the data. ##
 
