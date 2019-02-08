@@ -74,5 +74,5 @@ Import data for non-CDB database into the MySQL database grafana using the speci
 
 Import data for a CDB database into the MySQL database grafana using the specified database account. The location of the extracted CSV files are provided in the "-i" option.
 
-    graf_import.py -d grafana -u grafana -p GrafanaPassword -i /u01/mysql-files --cdb
+    graf_import.py -d grafana -u grafana -p GrafanaPassword -i /u01/mysql-files
 oracle@avmol7db1> 
