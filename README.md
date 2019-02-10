@@ -1,56 +1,72 @@
-# agraf
+# AGRAF
 AGRAF export / import scripts.
 
-This *README* describe the usage of AGRAF tool to create performance charts for Oracle Databases. The charts are created by exporting the selected AWR and dynamic views content into the plan CSV and text files. These files must be imported into the MySQL databases. In the next step you use Grafana and AGRAF App to display the imported data.
+This *README* describes the usage of AGRAF tool to export performance data from
+Oracle database and import them into MySQL database. The export is done into
+plain CSV and text files. During the export the tool uses SQL*Plus to select
+the data from AWR and some other views. You can find the list of all used
+data sources in the file agraf_contents.txt in the export output directory.
+The import is done using mysql client and LOAD DATA INFILE statements.
 
-# How to use AGRAF? #
+# How to use AGRAF export / import scripts? #
 
 1. Export data from AWR and dynamic files into CSV and plan text files.
-1. Transfer the files to the server with your MySQL server.
+1. Transfer the files to the server running your MySQL server.
 1. Import the data into the MySQL server.
-1. Use browser to access Grafana server and set up the agraf_mysql database configuration property.
 
 ## Exporting the data. ##
 
-* Extract the AGRAF export tar archive into a local directory on the Oracle database server.
+* Extract the AGRAF export tar archive into a new local directory on the Oracle
+database server.
 * Change directory to the "oracle" subdirectory of the extracted archive.
-* Run agraf_export.py script to collect the data. You must have the corresponding privileges to connect to the Oracle database as the internal user. (No prompt for SYS user password.) Do not forget to specify the output directory (-o option).
-* The export script will extract all data to the output directory and create the gzipped tar files. You need only these tar files.
+* Create a new output directory.
+* Set Oracle environment. The tool uses SQL*Plus internal connect without a
+password. (The connect "sqlplus / as sysdba" must work!)
+* Run agraf_export.py script to export the data and specify the time interval
+for data export. Do not forget to specify the output directory (-o option).
+* Usually you should specify "-a" to option to export AWR and ADDM reports
+as well.
+* Per default the export does not select segment statistics because of possible
+large size of CSV files. The option "-c seg" allows you to export them.
+* The script will extract all data into the output directory and create the
+gzipped tar file(s).
+* See export examples below for more details.
 
 ## Transfer exported files. ##
 
-AGRAF uses MySQL LOAD DATA INFILE statements to import the data into the MySQL tables at a very high speed. You have to allow the corresponding MySQL user the access to the specific directories for using LOAD DATA. So you have to extract the imported data into the specific directory. Eventually you will have to provide the MySQL user the read permissions to access the extracted files (chown or chmod).
+AGRAF uses MySQL LOAD DATA INFILE statements to import the data into the MySQL tables at a very high speed from the specific directory. The MySQL parameter
+**secure_file_priv** must set this directory in the MySQL parameter file.
+Additionally you have to give the corresponding MySQL database user the access to
+this specific "import" directory.
+
+That's why you have to extract the imported data into the specific "import"
+directory. Eventually you will have to provide the MySQL user the read
+permissions to access the extracted files (chown / chmod).
 
 ## Importing the data. ##
-* Extract the AGRAF import tar archive into a local directory on the MySQL database server.
+* Extract the AGRAF import scripts tar archive into the new directory on the
+MySQL database server.
 * Change directory to the "mysql" subdirectory of the extracted archive.
-* Run agraf_import.py script to import the data. You must provide the database name, database user, database password and the directory with the exported data.
-* The script will re-create all tables and load the data.
-
-## Using performance charts. ##
-
-Before displaying the charts you have to set up once the Grafana server:
-
-* Set up MySQL datatabase.
-* Import AGRAF dashboards.
-
-Now you can connect to the Grafana server with your browser and use the performance charts. Some charts need specific details like SQL_ID. You should insert these data manually using INSERT statements into the corresponding AGRAF MySQL tables. Do not forget, that every import will re-create all tables.
+* Run agraf_import.py script to import the data. You must provide the database
+name, database user, database password and the import directory with the
+exported data in of plan CSV and text files.
+* The script will re-create all interal tables and load the data.
+* See import examples below for more details.
 
 ## Data export examples. ##
 
 Use -h option to see the help text for agraf_export.py.
 
-Export data between the specified start time and now. No AWR/ADDM reports will be generated.
+Export data between for the specified time interval. The AWR/ADDM reports will
+be generated as well ("-a" option). The export will be done to the specified
+output directory ("-o" option).
 
-    agraf_export.py --begin_time "2019-01-14 19:45" --end_time now  -o ~/tmp/output
+    agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a  -o ../output
 
-The usual export does not export segment statistics, because it takes more time and creates larger files. The following command will export data between the specified start time and now with segment statistics.
+The usual export does not export segment statistics, because it takes more time and creates larger files. The following command will export data, segment statistics
+and AWR/ADDM reports.
 
-    agraf_export.py -b "2019-01-14 19:45" -e now  -o ~/tmp/output ---components seg
-
-Export data between the specified start time and now. Additionally the AWR/ADDM reports will be generated as html files.
-
-    agraf_export.py --begin_time "2019-01-14" --end_time now  -o ~/tmp/output -a
+    agraf_export.py -b "2019-01-14" -e now -a -o ~/tmp/output ---components seg
 
 Export data between the specified start time and now. Additionally the AWR/ADDM reports will be generated both as html and text files.
 
@@ -68,11 +84,8 @@ Generate AWR SQL reports for the specified SQL_IDs. Because of the "--summary_on
 
 Use -h option to see the help text for agraf_import.py.
 
-Import data for non-CDB database into the MySQL database grafana using the specified database account. The location of the extracted CSV files are provided in the "-i" option.
+Import data for into the MySQL database grafana using the specified database
+account. The location of the extracted CSV files (import directory) is provided
+by the "-i" option.
 
-    graf_import.py --database grafana --user grafana --password GrafanaPassword -i /u01/mysql-files
-
-Import data for a CDB database into the MySQL database grafana using the specified database account. The location of the extracted CSV files are provided in the "-i" option.
-
-    graf_import.py -d grafana -u grafana -p GrafanaPassword -i /u01/mysql-files
-oracle@avmol7db1> 
+    graf_import.py --database grafana --user grafana --password GrafanaPassword -i /agraf_import
