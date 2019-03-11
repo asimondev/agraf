@@ -13,7 +13,7 @@ set numwidth 24
 
 spool &OUT_DIR./vstandby_log.csv
 
-select thread#, group#, bytes, blocksize, status, next_time 
+select thread#, group#, bytes, blocksize, status
 from v$standby_log
 /
 

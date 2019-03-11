@@ -6,8 +6,7 @@ create table vstandby_log (
   group_nr int not null,
   bytes bigint not null,
   blocksize int not null,
-  status varchar(10) not null, 
-  next_time datetime not null
+  status varchar(10) not null
 )
 \g
 exit

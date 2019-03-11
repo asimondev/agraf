@@ -209,6 +209,7 @@ load data infile
   '%s/%s.csv'
   into table %s
   fields terminated by ';'
+  optionally enclosed by '"'
   lines terminated by '\\n'
 """ % (table, self.import_dir, table, table)
 

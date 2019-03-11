@@ -21,7 +21,7 @@ select a.instance_number inst_id, a.sample_time,
   nvl(sql_opname, '\N') || ';' ||
   nvl(to_char(user_id), '\N') || ';' ||
   nvl(program, '\N') || ';' || nvl(machine, '\n') || ';' ||
-  nvl(client_id, '\N') || ';' || nvl(module, '\N') || ';' ||
+  nvl('"' || client_id || '"', '\N') || ';' || nvl(module, '\N') || ';' ||
   case 
     when qc_instance_id is null and qc_session_id is null then 0
     else 1
