@@ -3,7 +3,7 @@
 -- Select data from DBA_HIST_PARAMETER into CSV file.
 -- 
 
-set pagesi 0 linesi 4096 trimsp on
+set pagesi 0 linesi 8192 trimsp on
 
 alter session set nls_timestamp_format='yyyy-mm-dd hh24:mi:ss';
 
