@@ -27,7 +27,7 @@ from py_exp.database import Database
 #   b - Database changes
 #   c - Grafana changes
 #   d - Code changes
-AGRAF_VERSION = "1.4.1.1"
+AGRAF_VERSION = "1.4.1.2"
 
 #######################################################################
 verbose_flag = False

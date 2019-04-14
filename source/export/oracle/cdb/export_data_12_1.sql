@@ -1,6 +1,6 @@
 -- Author: Andrej Simon, Oracle ACS Germany
 -- 
--- Main script to select release 18c AWR data into CSV files.
+-- Main script to select release 12.1 AWR data into CSV files.
 -- 
 
 conn / as sysdba
@@ -10,9 +10,9 @@ set heading off
 
 define OUT_DIR=&1
 
-spool &OUT_DIR./export_data_18c.log
+spool &OUT_DIR./export_data_12_1.log
 prompt >>> AGRAF Version 0.1 
-prompt >>> Running export_data_18c.sql 
+prompt >>> Running export_data_12_1.sql 
 
 prompt 
 prompt Ouput directory : &1
@@ -46,12 +46,14 @@ end;
 
 set termout off
 
-@non_cdb/write_dba_hist_database_instance_12_2
-@cdb/write_dba_hist_dyn_remaster_stats_12c
-@cdb/write_dba_hist_current_block_server_12_2
-@cdb/write_dba_hist_con_sys_time_model
-@cdb/write_dba_hist_con_system_event
-@cdb/write_dba_hist_con_sysstat
-@cdb/write_vpdbs.sql
+@non_cdb/write_dba_hist_database_instance_11g
+@non_cdb/write_dba_hist_dyn_remaster_stats_12c
+@non_cdb/write_dba_hist_current_block_server_11g
+@cdb/write_dba_hist_con_sys_time_model_12_1
+@cdb/write_dba_hist_con_system_event_12_1
+@cdb/write_dba_hist_con_sysstat_12_1
+@cdb/write_vpdbs_12_1
+
+
 
 exit

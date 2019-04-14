@@ -49,4 +49,9 @@ set termout off
 @non_cdb/write_dba_hist_database_instance_12_2
 @cdb/write_dba_hist_dyn_remaster_stats_12c
 @cdb/write_dba_hist_current_block_server_12_2
+@cdb/write_dba_hist_con_sys_time_model
+@cdb/write_dba_hist_con_system_event
+@cdb/write_dba_hist_con_sysstat
+@cdb/write_vpdbs.sql
+
 exit
