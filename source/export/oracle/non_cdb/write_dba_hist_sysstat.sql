@@ -41,13 +41,15 @@ where a.dbid = &db_id and a.instance_number in &inst_id and
   'redo wastage', 
   'DDL statements parallelized', 
   'DML statements parallelized', 'queries parallelized',
-  'user commits', 'session logical reads', 
+  'user commits', 'user calls',
+  'session logical reads', 
   'db block gets', 'db block changes',
   'consistent gets', 'consistent changes',
   'sorts (memory)', 'sorts (disk)', 'lob reads', 'lob writes',
   'enqueue deadlocks', 
   'temp space allocated (bytes)', 
-  'session pga memory')
+  'session pga memory',
+  'logons cumulative', 'logons current')
 )
 select v.*, extract(day from v.dif_ivl) * 86400 +
   extract(hour from dif_ivl) * 3600 +

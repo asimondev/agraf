@@ -27,7 +27,7 @@ from py_exp.database import Database
 #   b - Database changes
 #   c - Grafana changes
 #   d - Code changes
-AGRAF_VERSION = "1.4.1.2"
+AGRAF_VERSION = "1.4.2.3"
 
 #######################################################################
 verbose_flag = False
@@ -47,11 +47,11 @@ def parse_args():
     parser.add_option("-a", "--all", help="Export AWR and ADDM reports",
                       action="store_true", dest="all", default=False)
     parser.add_option("-b", "--begin_time",
-                      help="begin time")
+                      help="begin time. Format: {yyyy-mm-dd hh24:mi | yyyy-mm-dd | hh24:mi}")
     parser.add_option("-c", "--components",
                       help="Export components: {seg|noseg}")
     parser.add_option("-e", "--end_time",
-                      help="end time")
+                      help="end time. Format: {yyyy-mm-dd hh24:mi | yyyy-mm-dd | hh24:mi | now}")
     parser.add_option("-f", "--format",
                       help="AWR and ADDM report format: text, html, active-html")
     parser.add_option("-i", "--instance_id",
