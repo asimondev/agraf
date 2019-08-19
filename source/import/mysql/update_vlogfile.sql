@@ -5,6 +5,6 @@ update vlogfile
 set
   status = trim(status),
   type = trim(type),
-  member = trim(member)
+  name = trim(name)
 \g
 
