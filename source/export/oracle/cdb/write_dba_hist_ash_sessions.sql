@@ -4,7 +4,7 @@
 -- This script selects session states.
 -- 
 
-set pagesi 0 linesi 4096 trimsp on
+set pagesi 0 linesi 8192 trimsp on
 
 alter session set nls_timestamp_format='yyyy-mm-dd hh24:mi:ss';
 
@@ -20,14 +20,14 @@ select a.instance_number inst_id, a.sample_time,
   'x;' || nvl(event, '\N') || ';' || nvl(sql_id, '\N') || ';' ||
   nvl(sql_opname, '\N') || ';' ||
   nvl(to_char(user_id), '\N') || ';' ||
-  nvl(program, '\N') || ';' || nvl(machine, '\n') || ';' ||
+  nvl(program, '\N') || ';' || 
+  nvl(regexp_replace(machine, '([^[:alnum:]._-])', '*'), '\n') || ';' ||
   nvl('"' || client_id || '"', '\N') || ';' || nvl(module, '\N') || ';' ||
   case 
     when qc_instance_id is null and qc_session_id is null then 0
     else 1
-  end,
-  nvl(pga_allocated, 0),
-  nvl(temp_space_allocated, 0),
+  end || ';' || nvl(pga_allocated, 0) || ';' ||
+  nvl(temp_space_allocated, 0) || ';' || 
   blocking_session_status || ';' || 
   nvl(to_char(a.con_dbid), '\N') || ';' ||
   nvl(to_char(a.con_id), '\N')

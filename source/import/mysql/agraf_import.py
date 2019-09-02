@@ -25,7 +25,7 @@ import tempfile
 #   b - Database changes
 #   c - Grafana changes
 #   d - Code changes
-AGRAF_VERSION = "1.4.2.4"
+AGRAF_VERSION = "1.4.2.5"
 
 #######################################################################
 verbose_flag = False
