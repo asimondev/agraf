@@ -14,10 +14,13 @@ set numwidth 24
 
 spool &OUT_DIR./hist_ash_sessions.csv
 
-select a.instance_number inst_id, a.sample_time, 
-  a.session_id, a.session_serial#,
-  a.session_state, 
-  'x;' || nvl(event, '\N') || ';' || nvl(sql_id, '\N') || ';' ||
+select to_char(a.instance_number) || ';' || 
+  to_char(a.sample_time, 'yyyy-mm-dd hh24:mi:ss')  || ';' ||
+  to_char(a.session_id) || ';' || 
+  to_char(a.session_serial#) || ';' ||
+  a.session_state || ';x;' || 
+  nvl(event, '\N') || ';' || 
+  nvl(sql_id, '\N') || ';' ||
   nvl(sql_opname, '\N') || ';' ||
   nvl(to_char(user_id), '\N') || ';' || 
   nvl(program, '\N') || ';' || 
