@@ -9,6 +9,3 @@ create table graf_sql_id (
   primary key(id)
 )
 \g
-
-create unique index graf_sql_id_unique on graf_sql_id(sql_id, con_dbid)
-\g

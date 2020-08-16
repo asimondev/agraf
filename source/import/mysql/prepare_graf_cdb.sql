@@ -39,3 +39,10 @@ create index hist_ash_sessions_time_sql_ses on
   hist_ash_sessions(sample_time, sql_id, con_dbid, instance_number, sid, serial)
 \g
 
+select 'Adding AWR SQLs tables.' as '';
+source ./ddl/create_graf_awr_sqls.sql
+source ./ddl/create_graf_awr_reports.sql
+
+select 'Adding index on graf_sql_id.' as '';
+create unique index graf_sql_id_unique on graf_sql_id(sql_id,con_dbid)
+\g
