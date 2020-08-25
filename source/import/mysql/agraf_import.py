@@ -14,18 +14,14 @@ from __future__ import print_function
 
 from time import strftime
 
+import json
 import optparse
 import os
 import re
 import sys
 import tempfile
 
-# Version a.b.c.d:
-#   a - Main version number
-#   b - Database changes
-#   c - Grafana changes
-#   d - Code changes
-AGRAF_VERSION = "1.4.2.7beta1"
+AGRAF_VERSION = "1.5.0"
 
 #######################################################################
 verbose_flag = False
@@ -252,24 +248,35 @@ load data infile
 
 #######################################################################
 class ProgArgs:
-    def __init__(self, database=None, import_dir=None,
+    def __init__(self, config=None,
+                 database=None, import_dir=None,
                  user=None, password=None,
                  is_verbose=None):
+        self.config = config
         self.database = database
         self.import_dir = import_dir
         self.user = user
-        self.passsword = password
+        self.password = password
         self.cdb = None
 
         self.verbose = is_verbose
         set_verbose(False if is_verbose is None else is_verbose)
+        if self.config is not None:
+            try:
+                self.read_json()
+            except Exception as e:
+                print("Error: can't read JSON config file '%s'" % self.config)
+                print(e.args)
+                sys.exit(1)
 
     def __str__(self):
         ret = "Class ProgArgs:\n"
+        if self.config:
+            ret += "- config: %s\n" % self.config
         if self.user:
             ret += "- user: %s\n" % self.user
-        if self.passsword:
-            ret += "- password: %s\n" % self.passsword
+        if self.password:
+            ret += "- password: %s\n" % self.password
         if self.database:
             ret += "- database: %s\n" % self.database
         if self.import_dir:
@@ -281,11 +288,33 @@ class ProgArgs:
 
         return ret
 
+    def read_json(self):
+        data = json.load(open(self.config))
+
+        if (self.database is None and 'database' in data and
+                data['database'] is not None):
+            self.database = data['database']
+
+        if (self.user is None and 'user' in data and
+                data['user'] is not None):
+            self.user = data['user']
+
+        if (self.password is None and 'password' in data and
+                data['password'] is not None):
+            self.password = data['password']
+
+        if (self.import_dir is None and 'import_dir' in data and
+                data['import_dir'] is not None):
+            self.import_dir = data['import_dir']
+
     def check_import_directory(self):
         if self.import_dir is None:
-            print("Error: mandatory parameter import directory not found.")
-            usage()
-            sys.exit(1)
+            if os.getenv("AGRAF_IMPORT_DIR") is not None:
+                self.import_dir = os.getenv("AGRAF_IMPORT_DIR")
+            else:
+                print("Error: mandatory parameter import directory not found.")
+                usage()
+                sys.exit(1)
 
         if not os.path.isdir(self.import_dir):
             print("Error: wrong import directory '%s'" % self.import_dir)
@@ -298,16 +327,25 @@ class ProgArgs:
         valid = True
 
         if self.database is None:
-            print("Error: mandatory parameter database not found.")
-            valid = False
+            if os.getenv("AGRAF_MYSQL_DATABASE") is not None:
+                self.database = os.getenv("AGRAF_MYSQL_DATABASE")
+            else:
+                print("Error: mandatory parameter database not found.")
+                valid = False
 
         elif self.user is None:
-            print("Error: mandatory parameter database user not found.")
-            valid = False
+            if os.getenv("AGRAF_MYSQL_USER") is not None:
+                self.user = os.getenv("AGRAF_MYSQL_USER")
+            else:
+                print("Error: mandatory parameter database user not found.")
+                valid = False
 
-        elif self.passsword is None:
-            print("Error: mandatory parameter database password not found.")
-            valid = False
+        elif self.password is None:
+            if os.getenv("AGRAF_MYSQL_PASSWORD") is not None:
+                self.password = os.getenv("AGRAF_MYSQL_PASSWORD")
+            else:
+                print("Error: mandatory parameter database password not found.")
+                valid = False
 
         if not valid:
             usage()
@@ -347,7 +385,7 @@ class ProgArgs:
 
     def get_connect(self):
         return {'database': self.database, 'user': self.user,
-                'password': self.passsword}
+                'password': self.password}
 
     def get_import_dir(self):
         return self.import_dir
@@ -359,6 +397,7 @@ class ProgArgs:
 #######################################################################
 def parse_args():
     parser = optparse.OptionParser(version="%prog " + AGRAF_VERSION)
+    parser.add_option("-c", "--config", help="JSON config file")
     parser.add_option("-d", "--database", help="MySQL database")
     parser.add_option("-i", "--import_dir", help="Import direcotry")
     parser.add_option("-p", "--password", help="MySQL user password")
@@ -367,11 +406,13 @@ def parse_args():
                       action="store_true", dest="verbose", default=False)
 
     (options, args) = parser.parse_args()
-    prog_args = ProgArgs(database=options.database,
-                         user=options.user,
-                         password=options.password,
-                         import_dir=options.import_dir,
-                         is_verbose=options.verbose)
+    prog_args = ProgArgs(
+        config=options.config,
+        database=options.database,
+        user=options.user,
+        password=options.password,
+        import_dir=options.import_dir,
+        is_verbose=options.verbose)
     prog_args.check_args()
 
     return prog_args
@@ -379,7 +420,7 @@ def parse_args():
 
 #######################################################################
 def usage():
-    print("\nParameters: -d Database -u User -p Password "
+    print("\nParameters: -c JSON_Config_File -d Database -u User -p Password "
           "-i Import_Dir [-v --version]")
 
 

@@ -22,12 +22,7 @@ from time import strftime
 from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
-# Version a.b.c.d:
-#   a - Main version number
-#   b - Database changes
-#   c - Grafana changes
-#   d - Code changes
-AGRAF_VERSION = "1.4.2.6"
+AGRAF_VERSION = "1.5.0"
 
 #######################################################################
 verbose_flag = False

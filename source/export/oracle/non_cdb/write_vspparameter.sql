@@ -14,7 +14,10 @@ set numwidth 24
 
 spool &OUT_DIR./vspparameter.csv
 
-select sid, name, type, value, display_value, ordinal, 0 con_id
+select sid, name, type, 
+  translate(value, chr(10)||chr(13), '  '),
+  translate(display_value, chr(10)||chr(13), '  '),
+  ordinal, 0 con_id
 from v$spparameter
 where isspecified = 'TRUE'
 /
