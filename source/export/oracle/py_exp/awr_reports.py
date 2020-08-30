@@ -100,7 +100,7 @@ class AwrReports:
 def generate_awr_report(report_type, db_id, inst_id,
                         start_id, end_id, end_date, awr_dir):
     report_name = "agraf_awr_%s_%s_%s_%s.%s" % (inst_id,
-                                                start_id, end_id, end_date, report_type)
+        start_id, end_id, end_date, report_type if report_type != "text" else "txt")
     stmts = """
 define inst_num=%s
 define num_days=1

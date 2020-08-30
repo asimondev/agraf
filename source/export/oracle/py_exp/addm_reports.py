@@ -95,7 +95,7 @@ class AddmReports:
 
 def generate_addm_report(db_id, inst_id,
                          start_id, end_id, end_date, addm_dir):
-    report_name = "agraf_addm_%s_%s_%s_%s.text" % (inst_id,
+    report_name = "agraf_addm_%s_%s_%s_%s.txt" % (inst_id,
                                                    start_id, end_id, end_date)
     stmts = """
 define inst_num=%s

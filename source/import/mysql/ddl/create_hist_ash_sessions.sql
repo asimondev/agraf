@@ -21,6 +21,9 @@ create table hist_ash_sessions (
   pga_allocated double not null,
   temp_space_allocated double not null,
   blocking_status varchar(11) not null,
+  blocking_inst_id int,
+  blocking_sid int,
+  blocking_serial bigint,
   con_dbid bigint,
   con_id int,
   primary key(id)

@@ -31,6 +31,9 @@ select to_char(a.instance_number) || ';' ||
   end || ';' || nvl(pga_allocated, 0) || ';' ||
   nvl(temp_space_allocated, 0) || ';' || 
   blocking_session_status || ';' || 
+  nvl(to_char(a.blocking_inst_id), '\N') || ';' ||
+  nvl(to_char(a.blocking_session), '\N') || ';' ||
+  nvl(to_char(a.blocking_session_serial#), '\N') ||
   nvl(to_char(a.con_dbid), '\N') || ';' ||
   nvl(to_char(a.con_id), '\N')
 from dba_hist_active_sess_history a

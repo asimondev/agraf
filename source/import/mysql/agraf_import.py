@@ -21,7 +21,7 @@ import re
 import sys
 import tempfile
 
-AGRAF_VERSION = "1.5.0"
+AGRAF_VERSION = "1.5.1"
 
 #######################################################################
 verbose_flag = False
@@ -189,7 +189,7 @@ class Database:
   event, sql_id, sql_opname, user_id, program, machine,
   client_id, module, is_px,
   pga_allocated, temp_space_allocated,
-  blocking_status,
+  blocking_status, blocking_inst_id, blocking_sid, blocking_serial,
   con_dbid,
   con_id)
   """

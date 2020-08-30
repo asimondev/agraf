@@ -30,7 +30,12 @@ select to_char(a.instance_number) || ';' ||
     when qc_instance_id is null and qc_session_id is null then 0
     else 1
   end || ';' || nvl(pga_allocated, 0) || ';' || 
-  nvl(temp_space_allocated, 0) || ';' || blocking_session_status || ';\N;\N'
+  nvl(temp_space_allocated, 0) || ';' || 
+  blocking_session_status || ';' ||
+  nvl(to_char(a.blocking_inst_id), '\N') || ';' ||
+  nvl(to_char(a.blocking_session), '\N') || ';' ||
+  nvl(to_char(a.blocking_session_serial#), '\N') || 
+  ';\N;\N'
 from dba_hist_active_sess_history a
 where a.dbid = &db_id and a.instance_number in &inst_id and
   a.sample_time between to_timestamp('&beg_ivl', 'yyyy-mm-dd hh24:mi') and
