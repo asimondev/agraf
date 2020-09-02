@@ -11,3 +11,7 @@ create index hist_system_event_idx1 on
 create index hist_system_event_idx2 on 
   hist_system_event(event_id, event_name)
 \g
+
+create index hist_system_event_idx3 on 
+  hist_system_event(instance_number, snap_id, wait_class, dif_waited_micro)
+\g

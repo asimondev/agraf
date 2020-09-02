@@ -521,14 +521,16 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
                 self.add_content(my_file)
 
     def export_linux_details(self):
-        os.system("cat /proc/cpuinfo > %s/cpuinfo.log" % self.out_dir)
-        self.add_content("/proc/cpuinfo")
-        os.system("cat /proc/meminfo > %s/meminfo.log" % self.out_dir)
-        self.add_content("/proc/meminfo")
-        os.system("uname -a > %s/uname_a.log" % self.out_dir)
-        self.add_content("uname -a")
+        if sys.platform.startswith('linux'):
+            os.system("cat /proc/cpuinfo > %s/cpuinfo.log" % self.out_dir)
+            self.add_content("/proc/cpuinfo")
+            os.system("cat /proc/meminfo > %s/meminfo.log" % self.out_dir)
+            self.add_content("/proc/meminfo")
 
         self.check_linux_release()
+
+        os.system("uname -a > %s/uname_a.log" % self.out_dir)
+        self.add_content("uname -a")
 
     def export_os_data(self):
         self.export_linux_details()
