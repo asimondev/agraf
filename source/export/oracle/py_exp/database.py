@@ -617,8 +617,11 @@ class SqlPlus:
         self.sql_file = sql_file
         self.sql_file_prefix = "agraf_sqlplus_%s" % os.getpid()
         self.log_file = log_file
-        self.cmd = cmd
+        self.cmd = "export NLS_LANG=american_america.al32utf8"
+        if cmd is not None:
+            self.cmd += ";" + cmd
         self.is_verbose = is_verbose
+        # self.is_verbose = True
 
     def __str__(self):
         ret = "Class SqlPlus:\n"
@@ -675,6 +678,8 @@ class SqlPlus:
 
         cmd = self.cmd + ';' if self.cmd else ''
         cmd += 'sqlplus /nolog < ' + self.sql_file + ' 2>&1'
+        if self.verbose():
+            print("cmd: %s" % cmd)
         out = []
         try:
             fp = os.popen(cmd)
