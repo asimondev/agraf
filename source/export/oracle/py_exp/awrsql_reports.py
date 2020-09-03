@@ -9,10 +9,9 @@ from __future__ import print_function
 
 import multiprocessing
 import os
-import sys
 from time import strftime
 
-from export_utils import create_tar_file_name
+from export_utils import create_tar_file_name, get_tar_option, create_tar
 # from database import SqlPlus
 import database
 
@@ -46,11 +45,16 @@ class AwrSqlReports:
     def compress_awrsql_reports(self, suffix):
         tar_file = create_tar_file_name(self.out_dir, "awrsql_reports",
                                         self.inst_name, suffix)
-        rc = os.system("cd %s; tar zcf %s %s" %
-                       (self.out_dir, tar_file, self.awrsql_dir))
-        if rc:
-            print("Errors occurred during creating the tar archive.")
-            sys.exit(1)
+        cmd = ("cd %s; tar %s %s %s" %
+               (self.out_dir, get_tar_option(), tar_file, self.awrsql_dir))
+        tar_file = create_tar(tar_file, cmd)
+        #
+        #
+        # rc = os.system("cd %s; tar zcf %s %s" %
+        #                (self.out_dir, tar_file, self.awrsql_dir))
+        # if rc:
+        #     print("Errors occurred during creating the tar archive.")
+        #     sys.exit(1)
 
         print(">>> The tar archive " + tar_file +
               " with AWR SQL reports is ready.")

@@ -9,10 +9,9 @@ from __future__ import print_function
 
 import multiprocessing
 import os
-import sys
 from time import strftime
 
-from export_utils import create_tar_file_name
+from export_utils import create_tar_file_name, get_tar_option, create_tar
 import database
 
 
@@ -39,11 +38,15 @@ class AddmReports:
     def compress_addm_reports(self, suffix):
         tar_file = create_tar_file_name(self.out_dir, "addm_reports",
                                         self.inst_name, suffix)
-        rc = os.system("cd %s; tar zcf %s %s" %
-                       (self.out_dir, tar_file, self.addm_dir))
-        if rc:
-            print("Errors occurred during creating the tar archive.")
-            sys.exit(1)
+        cmd = ("cd %s; tar %s %s %s" %
+               (self.out_dir, get_tar_option(), tar_file, self.addm_dir))
+        tar_file = create_tar(tar_file, cmd)
+        #
+        # rc = os.system("cd %s; tar zcf %s %s" %
+        #                (self.out_dir, tar_file, self.addm_dir))
+        # if rc:
+        #     print("Errors occurred during creating the tar archive.")
+        #     sys.exit(1)
 
         print(">>> The tar archive " + tar_file +
               " with ADDM reports is ready.")
@@ -96,7 +99,7 @@ class AddmReports:
 def generate_addm_report(db_id, inst_id,
                          start_id, end_id, end_date, addm_dir):
     report_name = "agraf_addm_%s_%s_%s_%s.txt" % (inst_id,
-                                                   start_id, end_id, end_date)
+                                                  start_id, end_id, end_date)
     stmts = """
 define inst_num=%s
 define num_days=1

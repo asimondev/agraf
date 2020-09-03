@@ -9,11 +9,12 @@ from __future__ import print_function
 
 import multiprocessing
 import os
-import sys
 from time import strftime
 
-from export_utils import create_tar_file_name
+from export_utils import create_tar_file_name, get_tar_option, create_tar
 import database
+
+
 # from database import SqlPlus
 
 
@@ -42,11 +43,16 @@ class AwrReports:
     def compress_awr_reports(self, suffix):
         tar_file = create_tar_file_name(self.out_dir, "awr_reports",
                                         self.inst_name, suffix)
-        rc = os.system("cd %s; tar zcf %s %s" %
-                       (self.out_dir, tar_file, self.awr_dir))
-        if rc:
-            print("Errors occurred during creating the tar archive.")
-            sys.exit(1)
+        cmd = ("cd %s; tar %s %s %s" %
+               (self.out_dir, get_tar_option(), tar_file, self.awr_dir))
+        tar_file = create_tar(tar_file, cmd)
+
+        # rc = os.system("cd %s; tar zcf %s %s" %
+        #                (self.out_dir, tar_file, self.awr_dir))
+        # if rc:
+        #     print("Errors occurred during creating the tar archive.")
+        #     sys.exit(1)
+        #
 
         print(">>> The tar archive " + tar_file +
               " with AWR reports is ready.")
@@ -100,7 +106,8 @@ class AwrReports:
 def generate_awr_report(report_type, db_id, inst_id,
                         start_id, end_id, end_date, awr_dir):
     report_name = "agraf_awr_%s_%s_%s_%s.%s" % (inst_id,
-        start_id, end_id, end_date, report_type if report_type != "text" else "txt")
+                                                start_id, end_id, end_date,
+                                                report_type if report_type != "text" else "txt")
     stmts = """
 define inst_num=%s
 define num_days=1
@@ -119,4 +126,3 @@ define report_name=%s
 
 def run_awr_parallel(args):
     generate_awr_report(*args)
-

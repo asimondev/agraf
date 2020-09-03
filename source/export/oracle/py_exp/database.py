@@ -13,7 +13,7 @@ import shutil
 import sys
 import tempfile
 
-from export_utils import create_tar_file_name
+from export_utils import create_tar_file_name, get_tar_option, create_tar
 from addm_reports import AddmReports
 from awr_reports import AwrReports
 from awrsql_reports import AwrSqlReports
@@ -502,11 +502,23 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
     def compress_export_data(self):
         tar_file = create_tar_file_name(self.out_dir, "data", self.inst_name,
                                         self.interval_string(), self.cdb)
-        rc = os.system("cd %s; tar zcf %s *.log *.csv *.txt" %
-                       (self.out_dir, tar_file))
-        if rc:
-            print("Errors occurred during creating the tar archive.")
-            sys.exit(1)
+        cmd = ("cd %s; tar %s %s *.log *.csv *.txt" %
+               (self.out_dir, get_tar_option(), tar_file))
+        tar_file = create_tar(tar_file, cmd)
+
+        # tar_option = "zcf" if sys.platform.startswith('linux') else "cf"
+        # rc = os.system("cd %s; tar %s %s *.log *.csv *.txt" %
+        #                (self.out_dir, tar_option, tar_file))
+        # if rc:
+        #     print("Errors occurred during creating the tar archive.")
+        #     sys.exit(1)
+        #
+        # if not sys.platform.startswith('linux'):
+        #     rc = os.system("gzip %s" % tar_file)
+        #     if rc:
+        #         print("Errors occurred during compressing the tar archive.")
+        #         sys.exit(1)
+        #     tar_file += ".gz"
 
         print(">>> The tar archive " + tar_file +
               " with exported data is ready.")

@@ -200,7 +200,7 @@ class Database:
 
     def add_load_table(self, table):
         stmts = """truncate table %s
-\g
+\\g
 load data infile
   '%s/%s.csv'
   into table %s
