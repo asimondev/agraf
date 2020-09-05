@@ -21,7 +21,7 @@ import re
 import sys
 import tempfile
 
-AGRAF_VERSION = "1.5.3"
+AGRAF_VERSION = "1.5.4"
 
 #######################################################################
 verbose_flag = False

@@ -13,7 +13,3 @@ create table graf_ash (
 )
 \g
 
-create unique index graf_ash_unique on graf_ash(
-  inst_id, sid, serial, con_dbid)
-\g
-

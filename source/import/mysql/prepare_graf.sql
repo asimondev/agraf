@@ -32,6 +32,9 @@ source ./ddl/create_graf_tempfile.sql
 select 'Creating graf_ash.' as '';
 select curtime();
 source ./ddl/create_graf_ash.sql
+create unique index graf_ash_unique on graf_ash(
+  inst_id, sid, serial)
+\g
 
 select 'Adding index on hist_ash_sessions.' as '';
 select curtime();
