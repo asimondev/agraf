@@ -24,6 +24,7 @@ create table hist_ash_sessions (
   blocking_inst_id int,
   blocking_sid int,
   blocking_serial bigint,
+  action varchar(64),
   con_dbid bigint,
   con_id int,
   primary key(id)

@@ -4,7 +4,7 @@
 -- This script selects session states.
 -- 
 
-set pagesi 0 linesi 8192 trimsp on
+set pagesi 0 linesi 10240 trimsp on
 
 alter session set nls_timestamp_format='yyyy-mm-dd hh24:mi:ss';
 
@@ -33,7 +33,8 @@ select to_char(a.instance_number) || ';' ||
   blocking_session_status || ';' || 
   nvl(to_char(a.blocking_inst_id), '\N') || ';' ||
   nvl(to_char(a.blocking_session), '\N') || ';' ||
-  nvl(to_char(a.blocking_session_serial#), '\N') ||
+  nvl(to_char(a.blocking_session_serial#), '\N') || ';' ||
+  nvl(a.action, '\N') || ';' ||
   nvl(to_char(a.con_dbid), '\N') || ';' ||
   nvl(to_char(a.con_id), '\N')
 from dba_hist_active_sess_history a

@@ -21,7 +21,7 @@ import re
 import sys
 import tempfile
 
-AGRAF_VERSION = "1.5.4"
+AGRAF_VERSION = "1.6.0"
 
 #######################################################################
 verbose_flag = False
@@ -190,7 +190,7 @@ class Database:
   client_id, module, is_px,
   pga_allocated, temp_space_allocated,
   blocking_status, blocking_inst_id, blocking_sid, blocking_serial,
-  con_dbid,
+  action, con_dbid,
   con_id)
   """
         load_tables['dba_users'] = """  (user_id, username,

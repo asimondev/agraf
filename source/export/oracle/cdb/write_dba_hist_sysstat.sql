@@ -50,7 +50,13 @@ where a.dbid = &db_id and a.instance_number in &inst_id and
   'enqueue deadlocks',
   'temp space allocated (bytes)', 
   'session pga memory',
-  'logons cumulative', 'logons current')
+  'logons cumulative', 'logons current',
+  'bytes sent via SQL*Net to client',
+  'bytes received via SQL*Net from client',
+  'SQL*Net roundtrips to/from client',
+  'bytes sent via SQL*Net to dblink',
+  'bytes received via SQL*Net from dblink',
+  'SQL*Net roundtrips to/from dblink')
 )
 select v.*, extract(day from v.dif_ivl) * 86400 +
   extract(hour from dif_ivl) * 3600 +
