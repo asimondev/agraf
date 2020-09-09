@@ -12,7 +12,7 @@ define OUT_DIR=&1
 
 spool &OUT_DIR./export_data_19c.log
 prompt >>> AGRAF Version 0.1 
-prompt >>> Running export_data_18c.sql 
+prompt >>> Running export_data_19c.sql 
 
 prompt 
 prompt Ouput directory : &1
