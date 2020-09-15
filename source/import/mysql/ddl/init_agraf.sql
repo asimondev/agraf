@@ -5,6 +5,7 @@ commit;
 source ./create_graf_ash.sql
 source ./create_graf_sql_id.sql
 source ./create_graf_awr_sqls.sql
+source ./create_graf_statements.sql
 source ./create_graf_datafile.sql
 source ./create_graf_tempfile.sql
 source ./create_graf_seg.sql

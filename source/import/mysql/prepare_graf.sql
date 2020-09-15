@@ -46,6 +46,9 @@ select 'Adding AWR SQLs tables.' as '';
 source ./ddl/create_graf_awr_sqls.sql
 source ./ddl/create_graf_awr_reports.sql
 
+select 'Adding SQL statements table.' as '';
+source ./ddl/create_graf_statements.sql
+
 select 'Adding index on graf_sql_id.' as '';
 create unique index graf_sql_id_unique on graf_sql_id(sql_id)
 \g

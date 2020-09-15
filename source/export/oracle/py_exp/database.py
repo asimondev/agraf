@@ -17,6 +17,7 @@ from export_utils import create_tar_file_name, get_tar_option, create_tar
 from addm_reports import AddmReports
 from awr_reports import AwrReports
 from awrsql_reports import AwrSqlReports
+from statements import Statements
 
 
 class Database:
@@ -429,6 +430,9 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         if 'sql' in args.get_report_type():
             self.write_agraf_component('awrsql', 'yes')
 
+        if 'sqltext' in args.get_report_type():
+            self.write_agraf_component('statements', 'yes')
+
     def add_content(self, line, file_mode='a'):
         fout = open(self.content_file_name, file_mode)
         fout.write('%s\n' % line)
@@ -505,20 +509,6 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         cmd = ("cd %s; tar %s %s *.log *.csv *.txt" %
                (self.out_dir, get_tar_option(), tar_file))
         tar_file = create_tar(tar_file, cmd)
-
-        # tar_option = "zcf" if sys.platform.startswith('linux') else "cf"
-        # rc = os.system("cd %s; tar %s %s *.log *.csv *.txt" %
-        #                (self.out_dir, tar_option, tar_file))
-        # if rc:
-        #     print("Errors occurred during creating the tar archive.")
-        #     sys.exit(1)
-        #
-        # if not sys.platform.startswith('linux'):
-        #     rc = os.system("gzip %s" % tar_file)
-        #     if rc:
-        #         print("Errors occurred during compressing the tar archive.")
-        #         sys.exit(1)
-        #     tar_file += ".gz"
 
         print(">>> The tar archive " + tar_file +
               " with exported data is ready.")
@@ -621,6 +611,13 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
             print(sql)
         sql.generate_reports(self.interval_string(), summary, summary_only)
 
+    def export_sqltext(self):
+        stmt = Statements(self.cdb_prefix, self.db_id, self.in_inst_ids,
+                          self.min_snap_id, self.max_snap_id, self.out_dir)
+        if self.verbose():
+            print(stmt)
+
+        stmt.write_statements(self.interval_string(), self.inst_name)
 
 class SqlPlus:
     def __init__(self, stmts=None, sql_file=None,
@@ -665,6 +662,7 @@ class SqlPlus:
             os.write(fd, "set echo on verify on\n")
         else:
             os.write(fd, "set echo off verify off\n")
+        os.write(fd, "set arraysize 100\n")
         os.write(fd, self.stmts + "\n" + "exit\n")
         os.close(fd)
 

@@ -47,13 +47,6 @@ class AwrReports:
                (self.out_dir, get_tar_option(), tar_file, self.awr_dir))
         tar_file = create_tar(tar_file, cmd)
 
-        # rc = os.system("cd %s; tar zcf %s %s" %
-        #                (self.out_dir, tar_file, self.awr_dir))
-        # if rc:
-        #     print("Errors occurred during creating the tar archive.")
-        #     sys.exit(1)
-        #
-
         print(">>> The tar archive " + tar_file +
               " with AWR reports is ready.")
 

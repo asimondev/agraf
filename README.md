@@ -3,8 +3,8 @@ AGRAF Python export / import scripts.
 
 This *README* describes the usage of AGRAF Python scripts to export performance data from Oracle database and import them into MySQL database. The export is done into plain CSV and text files. During the export the tool uses SQL*Plus to select the data from AWR and some other views. You can find the list of all used data sources in the file agraf_contents.txt in the export output directory.  
 
-It's recommended to specify **-a** option to export AWR HTML reports 
-and ADDM reports. The SQL statements are not exported directly. They will be extracted by parsing AWR HTML reports.   
+It's recommended to specify **-a** option to export both AWR HTML reports and ADDM reports. Per default the SQL statements are not exported. They can be exported by using the **--report sqltext** 
+option.
 
 The import Python script uses MySQL client and LOAD DATA INFILE statements.
 
@@ -22,8 +22,9 @@ The import Python script uses MySQL client and LOAD DATA INFILE statements.
 * Set Oracle environment. The tool uses SQL*Plus internal connect without a password. (The connect "sqlplus / as sysdba" must work!)
 * Run agraf_export.py script to export the data and specify the time interval for data export. Do not forget to specify the output directory (-o option).
 * Usually you should specify "-a" to option to export AWR and ADDM reports as well. 
+* You have to add the "-r sqltext" option to export the SQL statements.
 * Per default the export does not select segment statistics because of possible large size of CSV files. The option "-c seg" allows you to export them.
-* The script will extract all data into the output directory and create the gzipped tar file(s).
+* The script will extract all data into the output directory and create the gzipped tar file(s). You only need the gzipped file.
 * See export examples below for more details.
 
 ## Transfer exported files. ##
@@ -46,9 +47,17 @@ JSON configuration file.
 
 Use -h option to see the help text for agraf_export.py.
 
-Export data between for the specified time interval. The AWR/ADDM reports will be generated as well ("-a" option). The export will be done to the specified output directory ("-o" option).
+Export data for the specified time interval. The AWR/ADDM reports will be generated as well ("-a" option). The export will be done to the specified output directory ("-o" option).
 
     agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a  -o ../output
+
+Export only SQL statements for the specified time interval. The SQLs will be written into the text file. The export will be done to the specified output directory ("-o" option).
+
+    agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -r sqltext,nodata  -o ../output
+
+Export data with AWR/ADDM reports and SQL statements. 
+
+    agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a -r sqltext -o ../output
 
 The usual export does not export segment statistics, because it takes more time and creates larger files. The following command will export data, segment statistics and AWR/ADDM reports.
 

@@ -22,7 +22,7 @@ from time import strftime
 from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
-AGRAF_VERSION = "1.6.1"
+AGRAF_VERSION = "1.7.0"
 
 #######################################################################
 verbose_flag = False
@@ -58,7 +58,7 @@ def parse_args():
     parser.add_option("-p", "--parallel", help="Number of parallel AWR/ADDM reports",
                       type=int)
     parser.add_option("-r", "--report",
-                      help="Reports: nodata, AWR, ADDM, SQL")
+                      help="Reports: nodata, AWR, ADDM, SQL, SQLTEXT")
     parser.add_option("--summary", help="Create summary reports",
                       action="store_true", dest="summary", default=False)
     parser.add_option("--summary_only", help="Create only summary reports",
@@ -221,7 +221,7 @@ class ProgArgs:
             res = set(lst)
             valid = True
             if res:
-                formats = set(["nodata", "awr", "addm", "sql"])
+                formats = set(["nodata", "awr", "addm", "sql", "sqltext"])
                 if res - formats:
                     valid = False
             else:
@@ -232,7 +232,7 @@ class ProgArgs:
             else:
                 print('Error: wrong report type "--report %s".' %
                       self.report_type)
-                print("Possible reports are nodata, AWR, ADDM, SQL.")
+                print("Possible reports are nodata, AWR, ADDM, SQL, SQLTEXT.")
                 sys.exit(1)
 
         return []
@@ -477,7 +477,8 @@ def main():
 
     if (args.is_all() or 'awr' in args.get_report_type() or
             'addm' in args.get_report_type() or
-            'sql' in args.get_report_type()):
+            'sql' in args.get_report_type() or
+            'sqltext' in args.get_report_type()):
         snap_ids = db.select_awr_report_snap_ids()
 
         if args.is_all() or 'awr' in args.get_report_type():
@@ -495,6 +496,8 @@ def main():
                                   args.get_parallel(),
                                   args.is_summary(), args.is_summary_only())
 
+        if 'sqltext' in args.get_report_type():
+            db.export_sqltext()
 
 #######################################################################
 if __name__ == '__main__':
