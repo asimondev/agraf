@@ -52,3 +52,6 @@ source ./ddl/create_graf_statements.sql
 select 'Adding index on graf_sql_id.' as '';
 create unique index graf_sql_id_unique on graf_sql_id(sql_id,con_dbid)
 \g
+
+select 'Adding SQL text views.' as '';
+source ./ddl/create_graf_sqltext_views.sql
