@@ -34,6 +34,9 @@ select to_char(a.instance_number) || ';' ||
   nvl(to_char(a.blocking_inst_id), '\N') || ';' ||
   nvl(to_char(a.blocking_session), '\N') || ';' ||
   nvl(to_char(a.blocking_session_serial#), '\N') || ';' ||
+  nvl(to_char(a.sql_plan_hash_value), '\N') || ';' ||
+  nvl(to_char(a.sql_full_plan_hash_value), '\N') || ';' ||
+  nvl(to_char(a.sql_adaptive_plan_resolved), '\N') || ';' ||
   nvl(a.action, '\N') || ';' ||
   nvl(to_char(a.con_dbid), '\N') || ';' ||
   nvl(to_char(a.con_id), '\N')
