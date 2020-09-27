@@ -21,7 +21,7 @@ import re
 import sys
 import tempfile
 
-AGRAF_VERSION = "1.9.0"
+AGRAF_VERSION = "1.10.0"
 
 #######################################################################
 verbose_flag = False
@@ -138,9 +138,9 @@ NON_CDB_TABLES = [
     'hist_seg_stat',
     'hist_seg_stat_obj',
     'hist_snapshot',
-    'hist_sqlstat',
     'hist_sys_time_model',
     'hist_sysstat',
+    'hist_sqlstat',
     'hist_sqltext',
     'hist_system_event',
     'hist_thread',
@@ -197,6 +197,33 @@ class Database:
         load_tables['dba_users'] = """  (user_id, username,
             dummy1, con_id, dummy2)
         """
+
+        load_tables['hist_sqlstat'] = """(
+          snap_id, db_id, instance_number, startup_time,
+  sql_id, plan_hash_value, module, action, sql_profile, 
+  parsing_schema, fetches_total, fetches_delta, dif_fetches, 
+  execs_total, execs_delta, dif_execs, 
+  px_execs_total, px_execs_delta, dif_px_execs, 
+  invalids_total, invalids_delta, dif_invalids, 
+  parses_total, parses_delta, dif_parses, 
+  disk_reads_total, disk_reads_delta, dif_disk_reads, 
+  buffer_gets_total, buffer_gets_delta, dif_buffer_gets, 
+  rows_total, rows_delta, dif_rows, 
+  cpu_time_total, cpu_time_delta, dif_cpu_time, 
+  elapsed_time_total, elapsed_time_delta, dif_elapsed_time, 
+  pread_bytes_total, pread_bytes_delta, dif_pread_bytes, 
+  pwrite_bytes_total, pwrite_bytes_delta, dif_pwrite_bytes, 
+  iowait_total, iowait_delta, dif_iowait, 
+  clwait_total, clwait_delta, dif_clwait, 
+  io_offload_elig_bytes_total, io_offload_elig_bytes_delta, dif_io_offload_elig_bytes, 
+  io_interconnect_bytes_total, io_interconnect_bytes_delta, dif_io_interconnect_bytes, 
+  physical_read_requests_total, physical_read_requests_delta, dif_physical_read_requests, 
+  optimized_physical_reads_total, optimized_physical_reads_delta, dif_optimized_physical_reads, 
+  cell_uncompressed_bytes_total, cell_uncompressed_bytes_delta, dif_cell_uncompressed_bytes, 
+  io_offload_return_bytes_total, io_offload_return_bytes_delta, dif_io_offload_return_bytes, 
+  end_interval_time, dif_interval, dummy1, con_dbid, con_id, 
+  dummy2, dif_sec)
+  """
         return load_tables
 
     def add_load_table(self, table):

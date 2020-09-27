@@ -55,3 +55,20 @@ create unique index graf_sql_id_unique on graf_sql_id(sql_id,con_dbid)
 
 select 'Adding SQL text views.' as '';
 source ./ddl/create_graf_sqltext_views.sql
+
+select 'Adding CDB index on hist_sqlstat.' as '';
+create index hist_sqlstat10 on hist_sqlstat(con_dbid, 
+  con_id, instance_number, end_interval_time)
+\g
+
+select 'Adding CDB indexes on hist_pdb_instance.' as '';
+create index hist_pdb_instance10 on hist_pdb_instance(con_dbid,
+  con_id, instance_number)
+\g
+create index hist_pdb_instance11 on hist_pdb_instance(con_dbid,
+  con_id, instance_number, pdb_name)
+\g
+
+select 'Adding graf_pdb_instance view.' as '';
+source ./ddl/create_graf_pdb_instance.sql
+

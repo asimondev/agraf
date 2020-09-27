@@ -22,7 +22,7 @@ from time import strftime
 from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
-AGRAF_VERSION = "1.9.0"
+AGRAF_VERSION = "1.10.0"
 
 #######################################################################
 verbose_flag = False
@@ -462,6 +462,7 @@ def main():
     db.select_min_max_snap_ids()
     db.set_in_instance_ids(args.get_inst_ids())
     db.write_agraf_component('agraf version', AGRAF_VERSION, 'w')
+    db.write_agraf_component('db_unique_name', db.db_name)
     db.write_agraf_component('instance name', db.inst_name)
     db.write_agraf_component('hostname', get_hostname())
     db.write_agraf_component('export timestamp', strftime("%Y-%m-%d %H:%M"))

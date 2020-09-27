@@ -2,6 +2,7 @@ drop table if exists hist_sqlstat
 \g
 
 create table hist_sqlstat (
+  id bigint not null auto_increment,
   snap_id bigint not null,
   db_id bigint not null,
   instance_number int not null,
@@ -78,7 +79,8 @@ create table hist_sqlstat (
   con_dbid bigint,
   con_id int,
   dummy2 varchar(80),
-  dif_sec double not null
+  dif_sec double not null,
+  primary key(id)
 )
 \g
 exit

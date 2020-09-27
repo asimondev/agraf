@@ -17,7 +17,7 @@ spool &OUT_DIR./hist_log.csv
 select a.snap_id, a.instance_number, b.startup_time,
   nvl(a.thread#, 0), a.group#,
   a.bytes, a.members, a.status,
-  a.first_time,
+  nvl(to_char(a.first_time, 'yyyy-mm-dd hh24:mi:ss'), '\N'),
   b.end_interval_time,
  'x;\N;\N;x' con_id
 from dba_hist_log a, dba_hist_snapshot b

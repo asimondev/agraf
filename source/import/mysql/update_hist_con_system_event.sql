@@ -13,3 +13,7 @@ create index hist_con_system_event_idx2 on hist_con_system_event(event_id,
   con_dbid, con_id, instance_number, end_interval_time)
 \g
 
+create index hist_con_system_event_idx3 on 
+  hist_con_system_event(snap_id, con_dbid, con_id, instance_number, 
+  wait_class, dif_waited_micro)
+\g

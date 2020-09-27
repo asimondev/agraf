@@ -45,7 +45,8 @@ declare
         select distinct a.sql_id, a.dbid,
             a.con_dbid, a.con_id
         from dba_hist_sqltext a, dba_hist_sqlstat b
-        where b.dbid = &db_id and b.instance_number in &inst_id and
+        where b.dbid = &db_id and a.dbid = b.dbid and 
+            b.instance_number in &inst_id and
             b.snap_id between :min_snap_id and :max_snap_id and
             a.sql_id = b.sql_id;
     l_clob clob;

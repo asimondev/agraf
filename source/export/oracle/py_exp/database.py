@@ -34,6 +34,7 @@ class Database:
 
         self.out_dir = out_dir
         self.db_id = db_id
+        self.db_name = None
         self.inst_id = inst_id
         self.inst_name = inst_name
         self.is_rac = is_rac
@@ -66,6 +67,8 @@ class Database:
             ret += "- version: %s\n" % self.version
         if self.major_version:
             ret += "- major_varsion: %s\n" % self.major_version
+        if self.db_name:
+            ret += "- db_name: %s\n" % self.db_name
         if self.db_id:
             ret += "- db_id: %s\n" % self.db_id
         if self.inst_id:
@@ -128,6 +131,17 @@ class Database:
                 return
         else:
             print("Error: can not find the Oracle release in SQL*Plus output>>>")
+            print(out)
+            sys.exit(1)
+
+    def check_db_name(self, out):
+        for line in out:
+            matchobj = re.match(r'\ADB_NAME:([\S]+):\Z', line)
+            if matchobj:
+                self.db_name = matchobj.group(1)
+                return
+        else:
+            print("Error: can not find the database unique name in SQL*Plus output>>>")
             print(out)
             sys.exit(1)
 
@@ -257,6 +271,7 @@ select 'CDB' || ':' || cdb || ':' my_cdb from v$database;
     def select_dbid_instance_rac():
         return """
 alter session set nls_language = 'AMERICAN';
+select 'DB_NAME' || ':' || db_unique_name || ':' my_db_name from v$database;
 select 'DB_ID' || ':' || dbid || ':' my_dbid from v$database;
 select 'INST_ID' || ':' || instance_number || ':' my_inst_id from v$instance;
 select 'INST_NAME' || ':' || instance_name || ':' my_inst_name from v$instance;
@@ -269,6 +284,7 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         sql = SqlPlus(stmts)
         out = sql.run()
         self.check_version(out)
+        self.check_db_name(out)
         self.check_db_id(out)
         self.check_inst_id(out)
         self.check_inst_name(out)
