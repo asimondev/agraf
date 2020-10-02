@@ -33,4 +33,3 @@ create table hist_ash_sessions (
   primary key(id)
 )
 \g
-exit

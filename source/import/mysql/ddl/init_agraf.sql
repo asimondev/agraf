@@ -9,5 +9,5 @@ source ./create_graf_statements.sql
 source ./create_graf_datafile.sql
 source ./create_graf_tempfile.sql
 source ./create_graf_seg.sql
-source ./create_hist_ash_sessions.sql
 source ./create_graf_notes.sql
+source ./create_hist_ash_sessions.sql
