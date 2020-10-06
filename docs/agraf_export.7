@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "AGRAF_EXPORT" "7" "September 2020" "" ""
+.TH "AGRAF_EXPORT" "7" "October 2020" "" ""
 .
 .SH "NAME"
 \fBagraf_export\fR \- export data from AWR to CSV files
@@ -99,13 +99,13 @@ Per default SQL statements are not exported\. The \fBsqltext\fR report type opti
 Export AGRAF data together with SQL statements and AWR/ADDM reports\.
 .
 .P
-\fBagraf_export\.py \-\-begin_time "2019\-01\-14" \-\-end_time now \-o ~/tmp/output \-a \-\-parallel 4 \-\-summary\fR
+\fB\./agraf_export\.py \-\-begin_time "2019\-01\-14" \-\-end_time now \-o ~/tmp/output \-a \-\-parallel 4 \-\-summary\fR
 .
 .P
 Export data between the specified start time and now\. The AWR/ADDM reports will be generated as well\. These reports will be generated in parallel with max parallel degree of 4\. Because of the \fB\-\-summary\fR option additionally AWR/ADDM reports for the whole interval will be generated\.
 .
 .P
-\fBagraf_export\.py \-\-min_snap_id 310 \-max_snap_id 314 \-o ~/tmp/output \-\-report nodata,sql \-s 7z63yy1hazt9s,1uk5m5qbzj1vt \-\-summary_only\fR
+\fB\./agraf_export\.py \-\-min_snap_id 310 \-max_snap_id 314 \-o ~/tmp/output \-\-report nodata,sql \-s 7z63yy1hazt9s,1uk5m5qbzj1vt \-\-summary_only\fR
 .
 .P
 Generate AWR SQL reports for the specified SQL_IDs\. Because of the \fB\-\-summary_only\fR option, only one SQL report for the whole AWR interval between min and max snapshot IDs will be created\.

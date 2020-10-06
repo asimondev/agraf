@@ -49,31 +49,31 @@ Use -h option to see the help text for agraf_export.py.
 
 Export data for the specified time interval. The AWR/ADDM reports will be generated as well ("-a" option). The export will be done to the specified output directory ("-o" option).
 
-    agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a  -o ../output
+    ./agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a  -o ../output
 
 Export only SQL statements for the specified time interval. The SQLs will be written into the text file. The export will be done to the specified output directory ("-o" option).
 
-    agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -r sqltext,nodata  -o ../output
+    ./agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -r sqltext,nodata  -o ../output
 
 Export data with AWR/ADDM reports and SQL statements. 
 
-    agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a -r sqltext -o ../output
+    ./agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a -r sqltext -o ../output
 
 The usual export does not export segment statistics, because it takes more time and creates larger files. The following command will export data, segment statistics and AWR/ADDM reports.
 
-    agraf_export.py -b "2019-01-14" -e now -a -o ~/tmp/output ---components seg
+    ./agraf_export.py -b "2019-01-14" -e now -a -o ~/tmp/output ---components seg
 
 Export data between the specified start time and now. Additionally the AWR/ADDM reports will be generated both as html and text files.
 
-    agraf_export.py -b "2019-01-14" -e now  -o ~/tmp/output --report awr,addm --format html,text
+    ./agraf_export.py -b "2019-01-14" -e now  -o ~/tmp/output --report awr,addm --format html,text
 
 Export data between the specified start time and now. The AWR/ADDM reports will be generated as well. These reports will be generated in parallel with max parallel degree of 4. Because of the "--summary" option additionally AWR/ADDM reports for the whole interval will be generated.
 
-    agraf_export.py --begin_time "2019-01-14" --end_time now  -o ~/tmp/output -a --parallel 4 --summary
+    ./agraf_export.py --begin_time "2019-01-14" --end_time now  -o ~/tmp/output -a --parallel 4 --summary
 
 Generate AWR SQL reports for the specified SQL_IDs. Because of the "--summary_only" option, only one SQL report for the whole AWR interval between min and max snapshot ids will be created.
 
-    agraf_export.py --min_snap_id 310 -max_snap_id 314 -o ~/tmp/output  --report nodata,sql -s 7z63yy1hazt9s,1uk5m5qbzj1vt --summary_only
+    ./agraf_export.py --min_snap_id 310 -max_snap_id 314 -o ~/tmp/output  --report nodata,sql -s 7z63yy1hazt9s,1uk5m5qbzj1vt --summary_only
 
 ## Data import examples. ##
 
@@ -81,7 +81,7 @@ Use -h option to see the help text for agraf_import.py.
 
 Import data for into the MySQL database grafana using the specified database account. The location of the extracted CSV files (import directory) is provided by the "-i" option.
 
-    agraf_import.py --database grafana --user grafana --password UserPassword -i /agraf/import
+    ./agraf_import.py --database grafana --user grafana --password UserPassword -i /agraf/import
 
 Usually you would run the agraf_import.py with the same parametrs. So 
 you could create the file env.json with all parameters:
@@ -95,7 +95,7 @@ you could create the file env.json with all parameters:
 
 You can run import now using the configuration file option:
 
-    agraf_import.py -c env.json  
+    ./agraf_import.py -c env.json  
 
 You could also set the environment variables AGRAF_MYSQL_DATABASE,
 AGRAF_MYSQL_USER, AGRAF_MYSQL_PASSWORD, AGRAF_IMPORT_DIR and run 

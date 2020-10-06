@@ -151,17 +151,17 @@ output directory is <code>../output</code>. The <code>-a</code> option generates
 
 <p>Export AGRAF data together with SQL statements and AWR/ADDM reports.</p>
 
-<p><code>agraf_export.py --begin_time "2019-01-14" --end_time now  -o ~/tmp/output -a --parallel 4 --summary</code></p>
+<p><code>./agraf_export.py --begin_time "2019-01-14" --end_time now  -o ~/tmp/output -a --parallel 4 --summary</code></p>
 
 <p>Export data between the specified start time and now. The AWR/ADDM reports will be generated as well. These reports will be generated in parallel with max parallel degree of 4. Because of the <code>--summary</code> option additionally AWR/ADDM reports for the whole interval will be generated.</p>
 
-<p><code>agraf_export.py --min_snap_id 310 -max_snap_id 314 -o ~/tmp/output  --report nodata,sql -s 7z63yy1hazt9s,1uk5m5qbzj1vt --summary_only</code></p>
+<p><code>./agraf_export.py --min_snap_id 310 -max_snap_id 314 -o ~/tmp/output  --report nodata,sql -s 7z63yy1hazt9s,1uk5m5qbzj1vt --summary_only</code></p>
 
 <p>Generate AWR SQL reports for the specified SQL_IDs. Because of the <code>--summary_only</code> option, only one SQL report for the whole AWR interval between min and max snapshot IDs will be created.</p>
 
 <h2 id="AUTHOR">AUTHOR</h2>
 
-<p>Andrej Simon <a href="&#109;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#97;&#x6e;&#100;&#114;&#101;&#x6a;&#x2e;&#115;&#x69;&#x6d;&#x6f;&#110;&#x40;&#111;&#x72;&#x61;&#99;&#108;&#x65;&#x2e;&#x63;&#111;&#x6d;" data-bare-link="true">&#x61;&#110;&#x64;&#114;&#x65;&#x6a;&#46;&#x73;&#x69;&#x6d;&#x6f;&#x6e;&#64;&#x6f;&#114;&#97;&#99;&#108;&#x65;&#46;&#x63;&#x6f;&#x6d;</a></p>
+<p>Andrej Simon <a href="&#109;&#97;&#105;&#108;&#x74;&#x6f;&#58;&#x61;&#110;&#100;&#x72;&#101;&#106;&#46;&#115;&#105;&#109;&#111;&#110;&#64;&#111;&#114;&#97;&#99;&#x6c;&#101;&#46;&#99;&#x6f;&#109;" data-bare-link="true">&#x61;&#x6e;&#100;&#x72;&#101;&#106;&#x2e;&#115;&#x69;&#x6d;&#x6f;&#x6e;&#x40;&#x6f;&#x72;&#x61;&#x63;&#x6c;&#101;&#x2e;&#x63;&#111;&#109;</a></p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
@@ -172,7 +172,7 @@ output directory is <code>../output</code>. The <code>-a</code> option generates
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>September 2020</li>
+    <li class='tc'>October 2020</li>
     <li class='tr'>agraf_export(7)</li>
   </ol>
 

@@ -4,7 +4,7 @@
 -- 
 -- Parameter: 
 
-set pagesi 0 linesi 8192 trimsp on
+set pagesi 0 linesi 16384 trimsp on
 
 alter session set nls_timestamp_format='yyyy-mm-dd hh24:mi:ss';
 
