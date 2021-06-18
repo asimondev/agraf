@@ -22,7 +22,7 @@ from time import strftime
 from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
-AGRAF_VERSION = "1.10.2"
+AGRAF_VERSION = "1.10.3"
 
 #######################################################################
 verbose_flag = False
