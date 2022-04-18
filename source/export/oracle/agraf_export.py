@@ -7,8 +7,6 @@
 # DBA_HIST_xxx table.
 #
 #
-# Example: agraf_export.py -b "2018-11-20 08:00" -e "2018-11-25 20:00"
-#
 
 from __future__ import print_function
 
@@ -16,13 +14,14 @@ import multiprocessing
 import optparse
 import os
 import re
+import shutil
 import sys
 from time import strftime
 
 from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
-AGRAF_VERSION = "1.10.3"
+AGRAF_VERSION = "1.12.1"
 
 #######################################################################
 verbose_flag = False
@@ -39,7 +38,7 @@ def verbose():
 
 def parse_args():
     parser = optparse.OptionParser(version="%prog " + AGRAF_VERSION)
-    parser.add_option("-a", "--all", help="Export AWR and ADDM reports",
+    parser.add_option("-a", "--all", help="Export AWR, SQLTEXT, ADDM reports",
                       action="store_true", dest="all", default=False)
     parser.add_option("-b", "--begin_time",
                       help="begin time. Format: {yyyy-mm-dd hh24:mi | yyyy-mm-dd | hh24:mi}")
@@ -59,6 +58,8 @@ def parse_args():
                       type=int)
     parser.add_option("-r", "--report",
                       help="Reports: nodata, AWR, ADDM, SQL, SQLTEXT")
+    parser.add_option("--cleanup", help='"rm -rf *" for existing output directory',
+                      action="store_true", default=False)
     parser.add_option("--summary", help="Create summary reports",
                       action="store_true", dest="summary", default=False)
     parser.add_option("--summary_only", help="Create only summary reports",
@@ -83,6 +84,7 @@ def parse_args():
                          report_type=options.report,
                          parallel=options.parallel,
                          components=options.components,
+                         cleanup=options.cleanup,
                          summary=options.summary,
                          summary_only=options.summary_only,
                          sql_id=options.sql_id)
@@ -106,14 +108,14 @@ def os_exit(out):
     sys.exit(1)
 
 
-#######################################################################
 class ProgArgs:
     def __init__(self, begin_time=None, end_time=None,
                  begin_snap_id=None, end_snap_id=None,
                  out_dir=None, is_verbose=None, instance=None,
                  all_reports=None, report_type=None,
                  report_format=None, parallel=None,
-                 components=None, sql_id=None,
+                 components=None, cleanup=None,
+                 sql_id=None,
                  summary=None, summary_only=None):
         self.begin_time = begin_time
         self.end_time = end_time
@@ -137,6 +139,7 @@ class ProgArgs:
         set_verbose(False if is_verbose is None else is_verbose)
         self.parallel = parallel
         self.components = components
+        self.cleanup = cleanup if cleanup is not None else False
 
     def __str__(self):
         ret = "Class MyArgs:\n"
@@ -186,11 +189,21 @@ class ProgArgs:
         if self.out_dir is None:
             self.out_dir = os.getcwd()
         else:
-            if not os.path.isdir(self.out_dir):
-                print("Error: wrong output directory '%s'" %
-                      self.out_dir)
-                usage()
-                sys.exit(1)
+            if os.path.isdir(self.out_dir):
+                if self.cleanup:
+                    try:
+                        for name in os.listdir(self.out_dir):
+                            a = os.path.join(self.out_dir, name)
+                            if os.path.isdir(a):
+                                shutil.rmtree(a)
+                            elif os.path.isfile(a):
+                                os.remove(a)
+                    except Exception as e:
+                        print("Error: can not cleanup output directory", self.out_dir, ":", e)
+                        sys.exit(1)
+
+            else:
+                os.mkdir(self.out_dir)
 
         self.out_dir = os.path.normpath(self.out_dir)
 
@@ -461,11 +474,11 @@ def main():
     db.select_properties()
     db.select_min_max_snap_ids()
     db.set_in_instance_ids(args.get_inst_ids())
-    db.write_agraf_component('agraf version', AGRAF_VERSION, 'w')
-    db.write_agraf_component('db_unique_name', db.db_name)
-    db.write_agraf_component('instance name', db.inst_name)
-    db.write_agraf_component('hostname', get_hostname())
-    db.write_agraf_component('export timestamp', strftime("%Y-%m-%d %H:%M"))
+    db.write_agraf_component('agraf version', AGRAF_VERSION, 'Export Version', 'w')
+    db.write_agraf_component('db_unique_name', db.db_name, 'Database Unique Name')
+    db.write_agraf_component('instance name', db.inst_name, 'Instance Name')
+    db.write_agraf_component('hostname', get_hostname(), 'Host name')
+    db.write_agraf_component('export timestamp', strftime("%Y-%m-%d %H:%M"), 'Export Timestamp')
     db.write_argraf_arguments()
     db.add_content("Export contents:", file_mode='w')
 
@@ -473,6 +486,8 @@ def main():
         print(db)
 
     db.write_agraf_reports(args)
+    db.set_agraf_content()
+
     if args.is_all() or 'nodata' not in args.get_report_type():
         db.export_data(args.get_components())
 
@@ -497,9 +512,14 @@ def main():
                                   args.get_parallel(),
                                   args.is_summary(), args.is_summary_only())
 
-        if 'sqltext' in args.get_report_type():
+        if args.is_all() or 'sqltext' in args.get_report_type():
             db.export_sqltext()
 
-#######################################################################
+    print("\nAGRAF export finished.")
+    print("AGRAF output directory:", db.out_dir)
+    print("You can use the following command to copy all exported files:")
+    print(" - scp %s/*.gz ..." % db.out_dir)
+
+
 if __name__ == '__main__':
     main()

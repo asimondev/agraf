@@ -6,7 +6,7 @@
 conn / as sysdba
 
 set heading off
--- set echo on verify on
+@cdb/set_echo_verify.sql
 
 define OUT_DIR=&1
 
@@ -53,5 +53,9 @@ set termout off
 @cdb/write_dba_hist_con_system_event
 @cdb/write_dba_hist_con_sysstat
 @cdb/write_vpdbs.sql
+@non_cdb/write_database_properties_19c
+@non_cdb/write_dba_registry_19c
+@non_cdb/write_dba_registry_history_19c
+@non_cdb/write_sqlpatch_status_19c
 
 exit

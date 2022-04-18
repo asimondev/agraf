@@ -8,12 +8,14 @@
 from __future__ import print_function
 
 import os
+import os.path
 import re
 import shutil
 import sys
 import tempfile
+from time import strftime
 
-from export_utils import create_tar_file_name, get_tar_option, create_tar
+from export_utils import create_tar_file_name, get_tar_option, create_tar, get_hostname
 from addm_reports import AddmReports
 from awr_reports import AwrReports
 from awrsql_reports import AwrSqlReports
@@ -49,6 +51,8 @@ class Database:
         self.cell_count = 0
         self.components_file_name = "%s/agraf_components.csv" % self.out_dir
         self.content_file_name = "%s/agraf_contexts.txt" % self.out_dir
+        self.hostname = get_hostname()
+        self.agraf_content = None
 
     def __str__(self):
         ret = "Class Database:\n"
@@ -123,7 +127,9 @@ class Database:
     def get_version(self):
         return self.version
 
-    def check_version(self, out):
+    def check_version(self):
+        sql = SqlPlus("exit")
+        out = sql.run(silent=False)
         for line in out:
             matchobj = re.match(r'\ASQL\*Plus.*Release[\s]+([\d]+\.[\d]+).*\Z', line)
             if matchobj:
@@ -280,10 +286,10 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
 """
 
     def select_properties(self):
+        self.check_version()
         stmts = self.select_dbid_instance_rac()
         sql = SqlPlus(stmts)
         out = sql.run()
-        self.check_version(out)
         self.check_db_name(out)
         self.check_db_id(out)
         self.check_inst_id(out)
@@ -297,6 +303,12 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         print(">>> Selecting database parameters and configuration...")
 
     def select_min_max_snap_ids(self):
+        ora_files = ["check_min_max_snap_ids.sql","get_min_max_snap_ids.sql"]
+        for fn in ora_files:
+            if not os.path.isfile(fn):
+                print("Error: Oracle script %s is missing." % fn)
+                sys.exit(1)
+
         instance = 0 if self.is_rac else self.inst_id
         if self.interval_ids:
             stmts = ('@check_min_max_snap_ids.sql "%s" "%s" "%s" "%s" "%s"\n' %
@@ -409,45 +421,53 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         sql.run()
         self.add_content_by_release()
 
-    def write_agraf_component(self, component, flag, file_mode='a'):
+    def write_agraf_component(self, component, flag, display_name, file_mode='a'):
         fout = open(self.components_file_name, file_mode)
-        fout.write('%s;%s\n' % (component, flag))
+        fout.write('%s;%s;%s\n' % (component, flag, display_name))
         fout.close()
 
     def write_agraf_components(self, components):
-        self.write_agraf_component('rdbms version', self.get_version())
-        self.write_agraf_component('cdb', ("yes" if self.is_cdb() else "no"))
-        self.write_agraf_component('rac', ("yes" if self.is_rac else "no"))
-        self.write_agraf_component('exadata', ("yes" if self.is_exa() else "no"))
+        self.write_agraf_component('rdbms version', self.get_version(),
+                                   'Database: RDBMS Release')
+        self.write_agraf_component('cdb', ("yes" if self.is_cdb() else "no"),
+                                   'Database: CDB?')
+        self.write_agraf_component('rac', ("yes" if self.is_rac else "no"),
+                                   'Database: RAC?')
+        self.write_agraf_component('exadata', ("yes" if self.is_exa() else "no"),
+                                   'Exadata?')
         if "seg" in components:
-            self.write_agraf_component('segments', 'yes')
+            self.write_agraf_component('segments', 'yes', 'Export: Segments?')
         else:
-            self.write_agraf_component('segments', 'no')
+            self.write_agraf_component('segments', 'no', 'Export: Segments?')
 
     def write_argraf_arguments(self):
         if self.begin_time:
-            self.write_agraf_component("begin_time", self.begin_time)
+            self.write_agraf_component("begin_time", self.begin_time, 'AGRAF Interval Begin Time')
         if self.begin_snap_id:
-            self.write_agraf_component("begin_snap_id", self.begin_snap_id)
+            self.write_agraf_component("begin_snap_id", self.begin_snap_id,
+                                       'AGRAF Interval Snapshot Begin ID')
         if self.end_time:
-            self.write_agraf_component("end_time", self.end_time)
+            self.write_agraf_component("end_time", self.end_time, 'AGRAF Interval End Time')
         if self.end_snap_id:
-            self.write_agraf_component("end_snap_id", self.end_snap_id)
-        self.write_agraf_component("min_snap_id", self.min_snap_id)
-        self.write_agraf_component("max_snap_id", self.max_snap_id)
+            self.write_agraf_component("end_snap_id", self.end_snap_id,
+                                       'AGRAF Interval Snapshot End ID')
+        self.write_agraf_component("min_snap_id", self.min_snap_id,
+                                   'Snapshot Min. ID')
+        self.write_agraf_component("max_snap_id", self.max_snap_id,
+                                   'Snapshot Max. ID')
 
     def write_agraf_reports(self, args):
         if args.is_all() or 'awr' in args.get_report_type():
-            self.write_agraf_component('awr', 'yes')
+            self.write_agraf_component('awr', 'yes', 'Export: AWR?')
 
         if args.is_all() or 'addm' in args.get_report_type():
-            self.write_agraf_component('addm', 'yes')
+            self.write_agraf_component('addm', 'yes', 'Export: ADDM?')
+
+        if args.is_all() or 'sqltext' in args.get_report_type():
+            self.write_agraf_component('statements', 'yes', 'Export: SQL Statements?')
 
         if 'sql' in args.get_report_type():
-            self.write_agraf_component('awrsql', 'yes')
-
-        if 'sqltext' in args.get_report_type():
-            self.write_agraf_component('statements', 'yes')
+            self.write_agraf_component('awrsql', 'yes', 'Export: AWR SQLS?')
 
     def add_content(self, line, file_mode='a'):
         fout = open(self.content_file_name, file_mode)
@@ -485,6 +505,9 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
                     "v$log", "v$standby_log", "v$logfile",
                     "dba_hist_instance_recovery",
                     "dba_hist_process_mem_summary", "dba_hist_log",
+                    "dba_registry", "dba_registry_history",
+                    "dbms_qopatch package output",
+                    "database_properties"
                     ]
         for line in entities:
             fout.write('%s\n' % line)
@@ -512,6 +535,15 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
             self.add_non_cdb_content()
 
         self.export_data_by_release()
+
+        os.system("%s/OPatch/opatch lspatches > %s/opatch_lspatches.csv 2>&1" %
+                  (os.environ['ORACLE_HOME'], self.out_dir))
+        self.add_content("opatch lspatches")
+
+        os.system("%s/OPatch/opatch lsinventory > %s/opatch_lsinventory.csv 2>&1" %
+                  (os.environ['ORACLE_HOME'], self.out_dir))
+        self.add_content("opatch lsinventory")
+
         self.export_os_data()
         self.export_exa_data()
         self.export_segments(components)
@@ -540,10 +572,13 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
 
     def export_linux_details(self):
         if sys.platform.startswith('linux'):
-            os.system("cat /proc/cpuinfo > %s/cpuinfo.log" % self.out_dir)
+            os.system("cat /proc/cpuinfo > %s/proc_cpuinfo.csv" % self.out_dir)
             self.add_content("/proc/cpuinfo")
-            os.system("cat /proc/meminfo > %s/meminfo.log" % self.out_dir)
+            os.system("cat /proc/meminfo > %s/proc_meminfo.csv" % self.out_dir)
             self.add_content("/proc/meminfo")
+        else:
+            os.system("touch %s/cpuinfo.csv" % self.out_dir)
+            os.system("touch %s/meminfo.csv" % self.out_dir)
 
         self.check_linux_release()
 
@@ -599,7 +634,7 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         stmts = "set pagesi 0 linesi 255 trimsp on heading on\n"
         stmts += ("select 'SNAP_ID' || ':' || snap_id || ':' || " +
                   "instance_number || ':' || \n  to_char(end_interval_time" +
-                  ", 'dd-mon_hh24-mi-ss') || ':' \nfrom dba_hist_snapshot\n" +
+                  ", 'yyyy-mm-dd_hh24-mi-ss') || ':' \nfrom dba_hist_snapshot\n" +
                   "where dbid = " + self.db_id + " and\nsnap_id between " +
                   self.min_snap_id + " and " + self.max_snap_id +
                   " and \n instance_number in " + self.in_inst_ids + "\n" +
@@ -612,12 +647,16 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
                            summary=False, summary_only=False):
         awr = AwrReports(self.db_id, self.inst_name, self.out_dir,
                          formats, snap_ids, parallel)
-        awr.generate_reports(self.interval_string(), summary, summary_only)
+        content = self.agraf_content + ("format;%s\n" % ','.join(formats))
+
+        awr.generate_reports(self.interval_string(), summary, summary_only,
+                             content)
 
     def export_addm_reports(self, snap_ids,
                             summary=False, summary_only=False):
         addm = AddmReports(self.db_id, self.inst_name, self.out_dir, snap_ids)
-        addm.generate_reports(self.interval_string(), summary, summary_only)
+        addm.generate_reports(self.interval_string(), summary, summary_only,
+                              self.agraf_content)
 
     def export_sql_reports(self, formats, snap_ids, sql_ids, parallel=None,
                            summary=False, summary_only=False):
@@ -634,6 +673,15 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
             print(stmt)
 
         stmt.write_statements(self.interval_string(), self.inst_name)
+
+    def set_agraf_content(self):
+        self.agraf_content = "db_unique_name;%s\n" % self.db_name
+        self.agraf_content += "instance name;%s\n" % self.inst_name
+        self.agraf_content += "hostname;%s\n" % self.hostname
+        self.agraf_content += "begin_time;%s\n" % self.begin_time
+        self.agraf_content += "end_time;%s\n" % self.end_time
+        self.agraf_content += "export timestamp;%s\n" % strftime("%Y-%m-%d %H:%M")
+
 
 class SqlPlus:
     def __init__(self, stmts=None, sql_file=None,
@@ -666,7 +714,7 @@ class SqlPlus:
     def verbose(self):
         return self.is_verbose
 
-    def create_sql_file(self, do_exit=True):
+    def create_sql_file(self, do_exit=True, verify=False):
         fd, self.sql_file = tempfile.mkstemp('.sql', self.sql_file_prefix)
 
         if do_exit:
@@ -675,9 +723,15 @@ class SqlPlus:
 
         os.write(fd, "connect / as sysdba\n")
         if self.verbose():
-            os.write(fd, "set echo on verify on\n")
+            os.write(fd, "set echo on\n")
         else:
-            os.write(fd, "set echo off verify off\n")
+            os.write(fd, "set echo off\n")
+
+        if verify:
+            os.write(fd, "set verify on\n")
+        else:
+            os.write(fd, "set verify off\n")
+
         os.write(fd, "set arraysize 100\n")
         os.write(fd, self.stmts + "\n" + "exit\n")
         os.close(fd)
@@ -693,19 +747,23 @@ class SqlPlus:
 
         sys.exit(1)
 
-    def run(self, do_exit=True):
+    def run(self, do_exit=True, silent=True, verify=False):
         if self.sql_file is None:
-            self.create_sql_file(do_exit)
+            self.create_sql_file(do_exit, verify=verify)
 
         if self.verbose():
-            print("SQL script for SQL*Plus>>>")
+            print("=== SQL script for SQL*Plus>>>")
             for line in open(self.sql_file):
                 print(line, end='')
+            print("=== End of SQL script === \n")
 
         cmd = self.cmd + ';' if self.cmd else ''
-        cmd += 'sqlplus /nolog < ' + self.sql_file + ' 2>&1'
+        cmd += "sqlplus"
+        if silent:
+            cmd += " -s"
+        cmd += ' /nolog < ' + self.sql_file + ' 2>&1'
         if self.verbose():
-            print("cmd: %s" % cmd)
+            print("SQL*Plus run command: %s" % cmd)
         out = []
         try:
             fp = os.popen(cmd)
@@ -726,8 +784,9 @@ class SqlPlus:
             os.remove(self.sql_file)
 
         if self.verbose():
-            print("SQL*Plus output>>>")
+            print("=== SQL*Plus output>>>")
             for line in out:
                 print(line, end='')
+            print("=== End of SQL*Plus output ===\n")
 
         return [x.strip() for x in out]

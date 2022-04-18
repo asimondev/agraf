@@ -6,7 +6,7 @@
 conn / as sysdba
 
 set heading off
--- set echo on verify on
+@non_cdb/set_echo_verify.sql
 
 define OUT_DIR=&1
 

@@ -50,7 +50,7 @@ declare
             b.snap_id between :min_snap_id and :max_snap_id and
             a.sql_id = b.sql_id;
     l_clob clob;
-    l_str varchar2(2048);
+    l_str varchar2(4096);
     l_amount pls_integer;
     l_offset pls_integer;
     l_cdb varchar2(128);

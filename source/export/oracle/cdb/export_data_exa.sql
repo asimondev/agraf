@@ -6,7 +6,7 @@
 conn / as sysdba
 
 set heading off
--- set echo on verify on
+@cdb/set_echo_verify.sql
 
 define OUT_DIR=&1
 
@@ -48,5 +48,6 @@ set termout off
 
 @non_cdb/write_vcell
 @cdb/write_dba_hist_exa_sysstat
+@cdb/write_dba_hist_exa_con_sysstat
 
 exit

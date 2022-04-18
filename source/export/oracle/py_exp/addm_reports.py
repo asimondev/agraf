@@ -11,7 +11,7 @@ import multiprocessing
 import os
 from time import strftime
 
-from export_utils import create_tar_file_name, get_tar_option, create_tar
+from export_utils import create_tar_file_name, get_tar_option, create_tar, write_agraf_content
 import database
 
 
@@ -69,7 +69,8 @@ class AddmReports:
                                  self.snap_ids[inst][cur_id][0],
                                  self.snap_ids[inst][cur_id][1], my_dir)
 
-    def generate_reports(self, suffix, summary=False, summary_only=False):
+    def generate_reports(self, suffix, summary=False, summary_only=False,
+                         agraf_content=""):
         my_dir = "%s/%s" % (self.out_dir, self.addm_dir)
         if not os.path.isdir(my_dir):
             os.mkdir(my_dir)
@@ -93,13 +94,16 @@ class AddmReports:
 
         print(">>> ADDM reports were generated into the following directory:")
         print("    ", my_dir)
+
+        write_agraf_content(my_dir, agraf_content)
+
         self.compress_addm_reports(suffix)
 
 
 def generate_addm_report(db_id, inst_id,
                          start_id, end_id, end_date, addm_dir):
-    report_name = "agraf_addm_%s_%s_%s_%s.txt" % (inst_id,
-                                                  start_id, end_id, end_date)
+    report_name = "agraf_addm_%s_%s_%s_%s.txt" % (inst_id, end_date,
+                                                  start_id, end_id)
     stmts = """
 define inst_num=%s
 define num_days=1

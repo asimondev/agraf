@@ -44,3 +44,9 @@ def create_tar(tar_file, cmd):
         tar_file += ".gz"
 
     return tar_file
+
+
+def write_agraf_content(out_dir, lines=""):
+    fout = open(os.path.join(out_dir, "agraf_content.csv"), "w")
+    fout.write(lines)
+    fout.close()

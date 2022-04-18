@@ -33,7 +33,11 @@ where a.dbid = &db_id and a.instance_number in &inst_id and
   'bytes processed', 'extra bytes read/written',
   'cache hit percentage', 'over allocation count', 
   'total PGA allocated', 'total PGA inuse', 
-  'total PGA used for auto workareas', 'maximum PGA allocated')
+  'total PGA used for auto workareas', 'maximum PGA allocated',
+  'global memory bound', 'maximum PGA used for auto workareas',
+  'total freeable PGA memory',
+  'process count', 'max processes count'
+   )
 )
 select v.*, extract(day from v.dif_ivl) * 86400 +
   extract(hour from dif_ivl) * 3600 +
