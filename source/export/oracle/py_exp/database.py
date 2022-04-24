@@ -506,6 +506,7 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
                     "dba_hist_instance_recovery",
                     "dba_hist_process_mem_summary", "dba_hist_log",
                     "dba_registry", "dba_registry_history",
+                    "dba_registry_sqlpatch",
                     "dbms_qopatch package output",
                     "database_properties"
                     ]

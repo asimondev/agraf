@@ -21,7 +21,10 @@ from time import strftime
 from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
+# symver version
 AGRAF_VERSION = "1.12.1"
+# incrementing number
+AGRAF_BUILD_VERSION="1"
 
 #######################################################################
 verbose_flag = False
@@ -475,6 +478,7 @@ def main():
     db.select_min_max_snap_ids()
     db.set_in_instance_ids(args.get_inst_ids())
     db.write_agraf_component('agraf version', AGRAF_VERSION, 'Export Version', 'w')
+    db.write_agraf_component('export version', AGRAF_BUILD_VERSION, 'Export Build Version')
     db.write_agraf_component('db_unique_name', db.db_name, 'Database Unique Name')
     db.write_agraf_component('instance name', db.inst_name, 'Instance Name')
     db.write_agraf_component('hostname', get_hostname(), 'Host name')
