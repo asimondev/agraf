@@ -54,5 +54,6 @@ set termout off
 @non_cdb/write_dba_registry_history_19c
 @non_cdb/write_dba_registry_sqlpatch_19c
 @non_cdb/write_sqlpatch_status_19c
+@non_cdb/write_vdatabase
 
 exit

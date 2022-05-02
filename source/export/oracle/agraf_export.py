@@ -21,10 +21,10 @@ from time import strftime
 from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
-# symver version
-AGRAF_VERSION = "1.12.1"
+# semver version
+AGRAF_VERSION = "1.13.2"
 # incrementing number
-AGRAF_BUILD_VERSION="1"
+AGRAF_BUILD_VERSION="2"
 
 #######################################################################
 verbose_flag = False

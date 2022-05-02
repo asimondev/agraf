@@ -24,17 +24,17 @@ Use -h option to see the help text for agraf_export.py.
 
 Export data for the specified time interval. The AWR/ADDM reports and a file with SQL statements from AWR will be generated as well ("-a" option). The export will be done to the specified output directory ("-o" option).
 
-    ./agraf_export.py --begin_time "2019-01-14 08:45" --end_time "2019-01-14 08:45" -a  -o ../output
+    ./agraf_export.py --begin_time "2019-01-14 23:00" --end_time "2019-01-16 01:00" -a  -o ../output
 
 Use the same options but their short form. Clear all old existing files from the *-output* directory before export:  
 
-    ./agraf_export.py -b "2019-01-14 08:45" -e "2019-01-14 08:45" -a  -o ../output --cleanup
+    ./agraf_export.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output --cleanup
 
-Use the same options but add parallel export option for AWR and ADDM reports:  
+Use the same options but add the parallel export option for AWR and ADDM reports:  
 
-    ./agraf_export.py -b "2019-01-14 08:45" -e "2019-01-14 08:45" -a  -o ../output --cleanup --parallel 4
+    ./agraf_export.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output --cleanup --parallel 4
 
-The usual export does not export segment statistics, because it takes more time and creates larger files. The following command will export data, segment statistics and AWR/ADDM reports.
+The usual AGRAF export does not export segment statistics, because it takes more time and creates larger files. The following command will export data, segment statistics and AWR/ADDM reports.
 
     ./agraf_export.py -b "2019-01-14" -e now -a -o ~/tmp/output ---components seg
 
