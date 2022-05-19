@@ -24,7 +24,7 @@ from py_exp.database import Database
 # semver version
 AGRAF_VERSION = "1.13.2"
 # incrementing number
-AGRAF_BUILD_VERSION="2"
+AGRAF_BUILD_VERSION="3"
 
 #######################################################################
 verbose_flag = False
