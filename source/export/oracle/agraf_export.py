@@ -22,9 +22,9 @@ from py_exp.export_utils import get_hostname
 from py_exp.database import Database
 
 # semver version
-AGRAF_VERSION = "1.13.2"
+AGRAF_VERSION = "1.13.3"
 # incrementing number
-AGRAF_BUILD_VERSION="3"
+AGRAF_BUILD_VERSION="4"
 
 #######################################################################
 verbose_flag = False
