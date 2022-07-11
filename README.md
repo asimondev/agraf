@@ -22,9 +22,9 @@ You should specify **-a** option to export AWR HTML reports,  ADDM reports and S
 
 ## Data export examples. ##
 
-Use -h option to see the help text for agraf_export.py.
+Use *\-h* option to see the help text for agraf_export.py.
 
-Export data for the specified time interval. The AWR/ADDM reports and a file with SQL statements from AWR will be generated as well ("-a" option). The export will be done to the specified output directory ("-o" option).
+Export data for the specified time interval. The AWR/ADDM reports and a file with SQL statements from AWR will be generated as well (*\-a* option). The export will be done to the specified output directory (*\-o* option).
 
     ./agraf_export.py --begin_time "2019-01-14 23:00" --end_time "2019-01-16 01:00" -a  -o ../output
 
@@ -37,7 +37,7 @@ Use the same options but add the parallel export option for AWR and ADDM reports
     ./agraf_export.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output --cleanup --parallel 4
 
 If you are on Oracle Linux 8, then the server usually does not have Python 2
-installed. So you have to use *agraf_python3.py" with Python 3 support for AGRAF export:
+installed. So you have to use *agraf_python3.py* with Python 3 support for AGRAF export:
 
     ./agraf_export3.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output --cleanup --parallel 4
 
@@ -49,11 +49,11 @@ Export data between the specified start time and now. Additionally the AWR/ADDM 
 
     ./agraf_export.py -b "2019-01-14" -e now  -o ~/tmp/output --report awr,addm --format html,text -a
 
-Export data between the specified start time and now. The AWR/ADDM reports will be generated as well. These reports will be generated in parallel with max parallel degree of 4. Because of the "--summary" option additionally AWR/ADDM reports for the whole interval will be generated.
+Export data between the specified start time and now. The AWR/ADDM reports will be generated as well. These reports will be generated in parallel with max parallel degree of 4. Because of the *--summary* option additionally AWR/ADDM reports for the whole interval will be generated.
 
     ./agraf_export.py --begin_time "2019-01-14" --end_time now  -o ~/tmp/output -a --parallel 4 --summary
 
-Generate AWR SQL reports for the specified SQL_IDs. Because of the "--summary_only" option, only one SQL report for the whole AWR interval between min and max snapshot ids will be created.
+Generate AWR SQL reports for the specified SQL_IDs. Because of the *--summary_only* option, only one SQL report for the whole AWR interval between min and max snapshot ids will be created.
 
     ./agraf_export.py --min_snap_id 310 -max_snap_id 314 -o ~/tmp/output  --report nodata,sql -s 7z63yy1hazt9s,1uk5m5qbzj1vt --summary_only
 
