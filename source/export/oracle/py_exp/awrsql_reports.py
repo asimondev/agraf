@@ -11,9 +11,10 @@ import multiprocessing
 import os
 from time import strftime
 
-from export_utils import create_tar_file_name, get_tar_option, create_tar
+from .sqlplus import SqlPlus
+from .export_utils import create_tar_file_name, get_tar_option, create_tar
 # from database import SqlPlus
-import database
+# from . import database
 
 
 class AwrSqlReports:
@@ -123,7 +124,7 @@ define report_name=%s
 """ % (sql_id, inst_id, db_id, start_id, end_id, report_type, report_name)
     cmd = "cd %s" % awr_dir
 
-    sql = database.SqlPlus(stmts, cmd=cmd)
+    sql = SqlPlus(stmts, cmd=cmd)
     sql.run(do_exit=False)
 
 

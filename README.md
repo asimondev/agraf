@@ -3,7 +3,7 @@ AGRAF Python export scripts.
 
 This *README* describes the usage of AGRAF Python scripts to export performance data from Oracle database. The export is done into plain CSV and text files. During the export the tool uses SQL*Plus to select the data from AWR and some other views. You can find the list of all used data sources in the file agraf_contents.txt in the export output directory.  
 
-You should specify **-a** option to export AWR HTML reports,  ADDM reports and SQL statements from AWR.
+You should specify **-a** option to export AWR HTML reports,  ADDM reports and SQL statements from AWR. This is the recommended approach.
 
 # Exporting the data. ##
 
@@ -11,10 +11,12 @@ You should specify **-a** option to export AWR HTML reports,  ADDM reports and S
 * Change directory to the "oracle" subdirectory of the extracted archive.
 * Create a new output directory: `mkdir ../output`
 * Set Oracle environment. The tool uses SQL*Plus internal connect without a password. (The connect "sqlplus / as sysdba" must work!)
-* Run agraf_export.py script to export the data and specify the time interval for data export. Do not forget to specify the output directory (-o option).
-* Usually you should specify "-a" to option to export AWR and ADDM reports as well. 
+* Run agraf_export.py or agraf_export3.py script to export the data and specify the time interval for data export. Use agraf_export.py with Python 2
+(Oracle Linux 7) and agraf_export33.py with Python 3 (Oracle Linux 8). 
+* Do not forget to specify the output directory (*\-o* option).
+* Usually you should specify *\-a* to option to export AWR and ADDM reports as well. 
 * If the output directory is not empty, you should clear it or specify the *--cleanup* option.
-* Per default the export does not select segment statistics because of possible large size of CSV files. The option "-c seg" allows you to export them.
+* Per default the export does not select segment statistics because of possible large size of CSV files. The option *\-c seg* allows you to export them.
 * The script will extract all data into the output directory and create the gzipped tar file(s). You only need the gzipped file.
 * See export examples below for more details.
 
@@ -33,6 +35,11 @@ Use the same options but their short form. Clear all old existing files from the
 Use the same options but add the parallel export option for AWR and ADDM reports:  
 
     ./agraf_export.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output --cleanup --parallel 4
+
+If you are on Oracle Linux 8, then the server usually does not have Python 2
+installed. So you have to use *agraf_python3.py" with Python 3 support for AGRAF export:
+
+    ./agraf_export3.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output --cleanup --parallel 4
 
 The usual AGRAF export does not export segment statistics, because it takes more time and creates larger files. The following command will export data, segment statistics and AWR/ADDM reports.
 

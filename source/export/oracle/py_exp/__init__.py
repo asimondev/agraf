@@ -1,2 +1,2 @@
-#!/usr/bin/python
+# Python package initialization
 

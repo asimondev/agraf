@@ -1,12 +1,14 @@
 #!/usr/bin/python
 
 from __future__ import print_function
+from __future__ import absolute_import
 
 import os
 import sys
 
-from export_utils import get_hostname
-import database
+from .sqlplus import SqlPlus
+from .export_utils import get_hostname
+# from . import database
 
 
 class Statements:
@@ -42,7 +44,7 @@ class Statements:
         stmts = ('@non_cdb/write_dba_hist_sqltext_clobs.sql "%s" "%s" "%s" %s %s\n' %
                  (file_name, self.db_id, self.in_inst_ids,
                   self.min_snap_id, self.max_snap_id))
-        sql = database.SqlPlus(stmts)
+        sql = SqlPlus(stmts)
         sql.run()
 
         self.compress_statements(file_name)
