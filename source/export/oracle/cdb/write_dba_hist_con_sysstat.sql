@@ -1,6 +1,7 @@
 -- Author: Andrej Simon, Oracle ACS Germany
 -- 
--- Select data from CDB DBA_HIST_CON_SYSSTAT into CSV file.
+-- Select data from CDB DBA_HIST_CON_SYSSTAT into CSV file. 
+-- For Oracle Release 12.2 and later.
 -- 
 -- Parameter: 
 
@@ -49,7 +50,29 @@ where a.dbid = &db_id and a.instance_number in &inst_id and
   'SQL*Net roundtrips to/from client',
   'bytes sent via SQL*Net to dblink',
   'bytes received via SQL*Net from dblink',
-  'SQL*Net roundtrips to/from dblink'
+  'SQL*Net roundtrips to/from dblink',
+  'IM scan CUs memcompress for capacity high',
+  'IM scan CUs memcompress for capacity low',
+  'IM scan CUs memcompress for dml',
+  'IM scan CUs memcompress for query high',
+  'IM scan CUs memcompress for query low',
+  'IM scan CUs no memcompress',
+  'IM scan rows',
+  'IM scan rows optimized',
+  'IM scan rows projected',
+  'IM scan (dynamic) rows',
+  'IM scan (dynamic) multi-threaded scans',
+  'IM scan (dynamic) tasks processed by thread',
+  'IM scan EU rows',
+  'IM transactions',
+  'IM transactions CUs invalid',
+  'IM transactions rows invalidated',
+  'IM populate CUs',
+  'IM populate EUs',
+  'IM repopulate CUs',
+  'IM repopulate EUs',
+  'IM repopulate (trickle) CUs',
+  'IM repopulate (trickle) EUs'
   )
 )
 select v.*, extract(day from v.dif_ivl) * 86400 +
