@@ -13,7 +13,7 @@ import os.path
 import re
 import shutil
 import sys
-import tempfile
+# import tempfile
 from time import strftime
 
 from .export_utils import create_tar_file_name, get_tar_option, create_tar, get_hostname
@@ -51,6 +51,7 @@ class Database:
         # self.in_instance_ids = None
         self.in_inst_ids = None
         self.cell_count = 0
+        self.im_size = 0
         self.components_file_name = "%s/agraf_components.csv" % self.out_dir
         self.content_file_name = "%s/agraf_contexts.txt" % self.out_dir
         self.hostname = get_hostname()
@@ -186,6 +187,17 @@ class Database:
             print(out)
             sys.exit(1)
 
+    def check_im_size(self, out):
+        for line in out:
+            matchobj = re.match(r'\AINMEMORY_SIZE:([\d]+):\Z', line)
+            if matchobj:
+                self.im_size = int(matchobj.group(1))
+                return
+        else:
+            print("Error: can not find INMEMORY_SIZE value in SQL*Plus output>>>")
+            print(out)
+            sys.exit(1)
+
     def check_exa(self, out):
         for line in out:
             matchobj = re.match(r'\ACELL_COUNT:([\d]+):\Z', line)
@@ -284,6 +296,7 @@ select 'DB_ID' || ':' || dbid || ':' my_dbid from v$database;
 select 'INST_ID' || ':' || instance_number || ':' my_inst_id from v$instance;
 select 'INST_NAME' || ':' || instance_name || ':' my_inst_name from v$instance;
 select 'RAC' || ':' || value || ':' my_rac from v$system_parameter where name = 'cluster_database';
+select 'INMEMORY_SIZE' || ':' || to_number(nvl(value,'0')) || ':' my_memsize from v$system_parameter where name = 'inmemory_size';
 select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
 """
 
@@ -297,6 +310,7 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         self.check_inst_id(out)
         self.check_inst_name(out)
         self.check_rac(out)
+        self.check_im_size(out)
         if self.major_version > 11:
             self.check_cdb()
         self.cdb_prefix = "cdb" if self.is_cdb() else "non_cdb"
@@ -407,7 +421,8 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
                             "dba_hist_current_block_server"),
                     "19c": ("dba_hist_database_instance",
                             "dba_hist_dyn_remaster_stats",
-                            "dba_hist_current_block_server"),
+                            "dba_hist_current_block_server"
+                            ),
                     }
         fout = open(self.content_file_name, 'a')
         for line in entities[self.version]:
@@ -441,6 +456,11 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
             self.write_agraf_component('segments', 'yes', 'Export: Segments?')
         else:
             self.write_agraf_component('segments', 'no', 'Export: Segments?')
+
+        if "imseg" in components:
+            self.write_agraf_component('imsegments', 'yes', 'Export: In-Memory Segments?')
+        else:
+            self.write_agraf_component('imsegments', 'no', 'Export: In-Memory Segments?')
 
     def write_argraf_arguments(self):
         if self.begin_time:
@@ -550,6 +570,7 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         self.export_os_data()
         self.export_exa_data()
         self.export_segments(components)
+        components = self.export_im_segments(components)
         self.write_agraf_components(components)
         print(">>> Export was done successfully.")
         self.compress_export_data()
@@ -617,6 +638,29 @@ select 'CELL_COUNT' || ':' || count(*) || ':' cell_cnt from v$cell;
         else:
             os.system("touch %s/hist_seg_stat.csv" % self.out_dir)
             os.system("touch %s/hist_seg_stat_obj.csv" % self.out_dir)
+
+    def export_im_segments(self, components):
+        if "imseg_default" in components:
+            components.remove("imseg_default")
+            if self.im_size > 0:
+                components.append("imseg")
+            else:
+                components.append("noimseg")
+
+        if self.get_version() in ["19c"] and "imseg" in components:
+            stmts = ('@%sexport_im_segments.sql "%s" "%s" "%s" "%s" "%s" %s %s\n' %
+                     (self.cdb_prefix, self.out_dir, self.db_id, self.in_inst_ids,
+                      self.begin_time, self.end_time,
+                      self.min_snap_id, self.max_snap_id))
+            sql = SqlPlus(stmts)
+            sql.run()
+            self.add_content("dba_hist_im_seg_stat")
+            self.add_content("dba_hist_im_seg_stat_obj")
+        else:
+            os.system("touch %s/hist_im_seg_stat.csv" % self.out_dir)
+            os.system("touch %s/hist_im_seg_stat_obj.csv" % self.out_dir)
+
+        return components
 
     @staticmethod
     def read_snap_ids(out):

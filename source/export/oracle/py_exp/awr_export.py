@@ -25,9 +25,9 @@ from .export_utils import get_hostname
 from .database import Database
 
 # semver version
-AGRAF_VERSION = "1.13.3"
+AGRAF_VERSION = "1.13.4"
 # incrementing number
-AGRAF_BUILD_VERSION="4"
+AGRAF_BUILD_VERSION = "5"
 
 #######################################################################
 verbose_flag = False
@@ -44,12 +44,13 @@ def verbose():
 
 def parse_args():
     parser = optparse.OptionParser(version="%prog " + AGRAF_VERSION)
-    parser.add_option("-a", "--all", help="Export AWR, SQLTEXT, ADDM reports",
+    parser.add_option("-a", "--all",
+                      help="Export data, AWR, SQLTEXT, ADDM reports",
                       action="store_true", dest="all", default=False)
     parser.add_option("-b", "--begin_time",
                       help="begin time. Format: {yyyy-mm-dd hh24:mi | yyyy-mm-dd | hh24:mi}")
     parser.add_option("-c", "--components",
-                      help="Export components: {seg|noseg}")
+                      help="Export components: [seg,noseg,imseg,noimseg] (Default: noseg,imseg")
     parser.add_option("-e", "--end_time",
                       help="end time. Format: {yyyy-mm-dd hh24:mi | yyyy-mm-dd | hh24:mi | now}")
     parser.add_option("-f", "--format",
@@ -256,27 +257,44 @@ class ProgArgs:
 
         return []
 
-    # At the moment only seg or noseg are allowed.
+    # Possible component values: seg, noseg, imseg, noimseg
+    # Use internal imseg_default value to choose later imseg or noimseg.
     def check_components(self):
         if self.components:
             res = set(self.components.split(','))
             valid = True
             if res:
-                formats = set(["seg", "noseg"])
+                formats = set(["seg", "noseg", "imseg", "noimseg"])
                 if res - formats:
                     valid = False
             else:
                 valid = False
 
-            if valid and len(res) == 1:  # Either seg or noseg
-                return list(res)
-            else:
+            if not valid:
                 print('Error: wrong export components "--components %s".' %
                       self.components)
-                print("Possible components: {seg | noseg}")
+                print("Possible components: [seg,noseg,imseg,noimseg] (Default: noseg,imseg)")
                 sys.exit(1)
 
-        return ["noseg"]
+            if "seg" in res and "noseg" in res:
+                print('Error: wrong export components "--components %s".' %
+                      self.components)
+                print("Error: both seg and noseg are specified.")
+                sys.exit(1)
+            elif "imseg" in res and "noimseg" in res:
+                print('Error: wrong export components "--components %s".' %
+                      self.components)
+                print("Error: both imseg and noimseg are specified.")
+                sys.exit(1)
+            else:
+                if "seg" not in res and "noseg" not in res:
+                    res.add("noseg")
+                if "imseg" not in res and "noimseg" not in res:
+                    res.add("imseg_default")
+                return list(res)
+
+        return ["noseg", "imseg_default"]
+
 
     def check_interval(self):
         valid = True

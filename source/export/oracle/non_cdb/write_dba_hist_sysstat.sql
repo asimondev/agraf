@@ -71,6 +71,7 @@ where a.dbid = &db_id and a.instance_number in &inst_id and
   'IM scan EU rows',
   'IM transactions',
   'IM transactions CUs invalid',
+  'IM transactions rows journaled',
   'IM transactions rows invalidated',
   'IM populate CUs',
   'IM populate EUs',
