@@ -9,12 +9,11 @@ You should specify **-a** option to export AWR HTML reports,  ADDM reports and S
 
 * Unpack the AGRAF export tar archive into a new local directory on the Oracle database server.
 * Change directory to the "oracle" subdirectory of the extracted archive.
-* Create a new output directory: `mkdir ../output`
 * Set Oracle environment. The tool uses SQL*Plus internal connect without a password. (The connect "sqlplus / as sysdba" must work!)
 * Run agraf_export.py or agraf_export3.py script to export the data and specify the time interval for data export. Use agraf_export.py with Python 2
 (Oracle Linux 7) and agraf_export33.py with Python 3 (Oracle Linux 8). 
-* Do not forget to specify the output directory (*\-o* option).
 * Usually you should specify *\-a* to option to export AWR and ADDM reports as well. 
+* Specify the output directory if the default *\-o ../output* does not work.
 * If the output directory is not empty, you should clear it or specify the *--cleanup* option.
 * Per default the export does not select segment statistics because of possible large size of CSV files. The option *\-c seg* allows you to export them.
 * The script will extract all data into the output directory and create the gzipped tar file(s). You only need the gzipped file.
@@ -24,13 +23,13 @@ You should specify **-a** option to export AWR HTML reports,  ADDM reports and S
 
 Use *\-h* option to see the help text for agraf_export.py.
 
-Export data for the specified time interval. The AWR/ADDM reports and a file with SQL statements from AWR will be generated as well (*\-a* option). The export will be done to the specified output directory (*\-o* option).
+Export data for the specified time interval. The AWR/ADDM reports and a file with SQL statements from AWR will be generated as well (*\-a* option). The export will be done to the default output directory (*../output*).
 
-    ./agraf_export.py --begin_time "2019-01-14 23:00" --end_time "2019-01-16 01:00" -a  -o ../output
+    ./agraf_export.py --begin_time "2019-01-14 23:00" --end_time "2019-01-16 01:00" -a 
 
-Use the same options but their short form. Clear all old existing files from the *-output* directory before export:  
+Use the same options but their short form. Set up the output directory. Clear all old existing files from the *\-o output_proddb* directory before export:  
 
-    ./agraf_export.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output --cleanup
+    ./agraf_export.py -b "2019-01-14 23:00" -e "2019-01-16 01:00" -a  -o ../output_proddb --cleanup
 
 Use the same options but add the parallel export option for AWR and ADDM reports:  
 

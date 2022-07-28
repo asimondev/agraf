@@ -50,7 +50,7 @@ def parse_args():
     parser.add_option("-b", "--begin_time",
                       help="begin time. Format: {yyyy-mm-dd hh24:mi | yyyy-mm-dd | hh24:mi}")
     parser.add_option("-c", "--components",
-                      help="Export components: [seg,noseg,imseg,noimseg] (Default: noseg,imseg")
+                      help="Export components: [seg,noseg,imseg,noimseg] (default: noseg,imseg")
     parser.add_option("-e", "--end_time",
                       help="end time. Format: {yyyy-mm-dd hh24:mi | yyyy-mm-dd | hh24:mi | now}")
     parser.add_option("-f", "--format",
@@ -60,7 +60,7 @@ def parse_args():
     parser.add_option("-n", "--min_snap_id", help="min snap ID",
                       type=int)
     parser.add_option("-o", "--output_dir",
-                      help="output directory")
+                      help="output directory (default: ../output")
     parser.add_option("-p", "--parallel", help="Number of parallel AWR/ADDM reports",
                       type=int)
     parser.add_option("-r", "--report",
@@ -194,23 +194,28 @@ class ProgArgs:
 
     def check_output_directory(self):
         if self.out_dir is None:
-            self.out_dir = os.getcwd()
-        else:
-            if os.path.isdir(self.out_dir):
-                if self.cleanup:
-                    try:
-                        for name in os.listdir(self.out_dir):
-                            a = os.path.join(self.out_dir, name)
-                            if os.path.isdir(a):
-                                shutil.rmtree(a)
-                            elif os.path.isfile(a):
-                                os.remove(a)
-                    except Exception as e:
-                        print("Error: can not cleanup output directory", self.out_dir, ":", e)
-                        sys.exit(1)
+            # self.out_dir = os.getcwd()
+            self.out_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+            self.out_dir = os.path.abspath(os.path.join(self.out_dir, "output"))
 
+        if os.path.isdir(self.out_dir):
+            if self.cleanup:
+                try:
+                    for name in os.listdir(self.out_dir):
+                        a = os.path.join(self.out_dir, name)
+                        if os.path.isdir(a):
+                            shutil.rmtree(a)
+                        elif os.path.isfile(a):
+                            os.remove(a)
+                except Exception as e:
+                    print("Error: can not cleanup output directory", self.out_dir, ":", e)
+                    sys.exit(1)
             else:
-                os.mkdir(self.out_dir)
+                print("Using non-empty output directory. Use --cleanup option "
+                      "to clean up the output directory before export.\n")
+
+        else:
+            os.mkdir(self.out_dir)
 
         self.out_dir = os.path.normpath(self.out_dir)
 
